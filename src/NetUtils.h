@@ -16,7 +16,8 @@
               withPwd:(NSString *)pwd
          withCallerId:(NSString *)callerId
          withCalleeId:(NSString *)cid;
-
-- (void)sendData:(NSData *)data;
+- (void)initNetwork;
+- (int)startCall:(NSString *)cid;
+- (void)startSendData:(NSData *)data;
 
 @end

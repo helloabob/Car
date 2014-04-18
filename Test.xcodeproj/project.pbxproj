@@ -25,8 +25,10 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		2D640F101900147900838324 /* NetUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2D640F0F1900147900838324 /* NetUtils.mm */; };
-		2D640F1519001C6F00838324 /* InputViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D640F1319001C6F00838324 /* InputViewController.m */; };
-		2D640F1619001C6F00838324 /* InputViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2D640F1419001C6F00838324 /* InputViewController.xib */; };
+		2D879C15190164FF00368C8D /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D879C14190164FF00368C8D /* MainViewController.m */; };
+		2D879C1819016ACF00368C8D /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D879C1719016ACF00368C8D /* MBProgressHUD.m */; };
+		2D879C1B1901761900368C8D /* record_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D879C191901761900368C8D /* record_down.png */; };
+		2D879C1C1901761900368C8D /* record_up.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D879C1A1901761900368C8D /* record_up.png */; };
 		500623A3157CAEB7008C2B07 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 500623A2157CAEB7008C2B07 /* CFNetwork.framework */; };
 		500623A5157CAECE008C2B07 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 500623A4157CAECE008C2B07 /* SenTestingKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		5008758915A74E0800A52053 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 5008758815A74E0800A52053 /* icon.png */; };
@@ -119,9 +121,12 @@
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		2D640F0E1900147900838324 /* NetUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetUtils.h; sourceTree = "<group>"; };
 		2D640F0F1900147900838324 /* NetUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NetUtils.mm; sourceTree = "<group>"; };
-		2D640F1219001C6F00838324 /* InputViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputViewController.h; sourceTree = "<group>"; };
-		2D640F1319001C6F00838324 /* InputViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputViewController.m; sourceTree = "<group>"; };
-		2D640F1419001C6F00838324 /* InputViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InputViewController.xib; sourceTree = "<group>"; };
+		2D879C13190164FF00368C8D /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
+		2D879C14190164FF00368C8D /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
+		2D879C1619016ACF00368C8D /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
+		2D879C1719016ACF00368C8D /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		2D879C191901761900368C8D /* record_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record_down.png; sourceTree = "<group>"; };
+		2D879C1A1901761900368C8D /* record_up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record_up.png; sourceTree = "<group>"; };
 		500623A2157CAEB7008C2B07 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		500623A4157CAECE008C2B07 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		500623B6157CB163008C2B07 /* Test_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Test_Prefix.pch; sourceTree = "<group>"; };
@@ -302,6 +307,10 @@
 		507EEA0A15AF13D0000FA84E /* src */ = {
 			isa = PBXGroup;
 			children = (
+				2D879C191901761900368C8D /* record_down.png */,
+				2D879C1A1901761900368C8D /* record_up.png */,
+				2D879C1619016ACF00368C8D /* MBProgressHUD.h */,
+				2D879C1719016ACF00368C8D /* MBProgressHUD.m */,
 				2D640F0D1900145900838324 /* utils */,
 				D8BC4E9E15DD2D5800B012B6 /* ttt1.jpg */,
 				D8BC4E9715DD296D00B012B6 /* KKScrollView.h */,
@@ -321,9 +330,8 @@
 				507EEA4915AF13D0000FA84E /* spcaframe.h */,
 				0489DC2F15C66580001AED2F /* myAudio.h */,
 				0489DC3015C66580001AED2F /* myAudio.m */,
-				2D640F1219001C6F00838324 /* InputViewController.h */,
-				2D640F1319001C6F00838324 /* InputViewController.m */,
-				2D640F1419001C6F00838324 /* InputViewController.xib */,
+				2D879C13190164FF00368C8D /* MainViewController.h */,
+				2D879C14190164FF00368C8D /* MainViewController.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -439,7 +447,6 @@
 				5A61701F1900F26600B63B5B /* statemachine.txt in Resources */,
 				507EEA5515AF13D0000FA84E /* icon_r11_c18_s1.png in Resources */,
 				5A6170201900F26600B63B5B /* statemachinecall.txt in Resources */,
-				2D640F1619001C6F00838324 /* InputViewController.xib in Resources */,
 				507EEA5615AF13D0000FA84E /* icon_r11_c24_s1.png in Resources */,
 				507EEA5715AF13D0000FA84E /* icon_r11_c30_s1.png in Resources */,
 				507EEA5815AF13D0000FA84E /* icon_r11_c33_s1.png in Resources */,
@@ -466,6 +473,7 @@
 				5A61701D1900F26600B63B5B /* protocol.cmd.txt in Resources */,
 				507EEA6C15AF13D0000FA84E /* icon_r19_c11_s1.png in Resources */,
 				507EEA6D15AF13D0000FA84E /* icon_r19_c19_s1.png in Resources */,
+				2D879C1B1901761900368C8D /* record_down.png in Resources */,
 				507EEA6E15AF13D0000FA84E /* icon_r19_c24_s1.png in Resources */,
 				507EEA6F15AF13D0000FA84E /* icon_r19_c3_s1.png in Resources */,
 				507EEA7015AF13D0000FA84E /* icon_r2_c12_s1.png in Resources */,
@@ -487,6 +495,7 @@
 				507EEA7E15AF13D0000FA84E /* icon_r9_c24_s1.png in Resources */,
 				507EEA7F15AF13D0000FA84E /* icon_r9_c30_s1.png in Resources */,
 				507EEA8015AF13D0000FA84E /* icon_r9_c33_s1.png in Resources */,
+				2D879C1C1901761900368C8D /* record_up.png in Resources */,
 				507EEA8115AF13D0000FA84E /* icon_r9_c5_s1.png in Resources */,
 				047D6A3915B68FD40049E389 /* default.png in Resources */,
 				048D2B2B15BE996E005107BD /* movie.mov in Resources */,
@@ -505,7 +514,7 @@
 				5A61701C1900F26600B63B5B /* cli_testsample_public.cpp in Sources */,
 				2D640F101900147900838324 /* NetUtils.mm in Sources */,
 				507EEA4C15AF13D0000FA84E /* AsyncSocket.m in Sources */,
-				2D640F1519001C6F00838324 /* InputViewController.m in Sources */,
+				2D879C15190164FF00368C8D /* MainViewController.m in Sources */,
 				507EEA4E15AF13D0000FA84E /* DemoViewController.m in Sources */,
 				507EEA5015AF13D0000FA84E /* DjSocket.m in Sources */,
 				507EEA5215AF13D0000FA84E /* main.m in Sources */,
@@ -514,6 +523,7 @@
 				5A61701B1900F26600B63B5B /* cli_testsample_main.cpp in Sources */,
 				5A6170081900B05400B63B5B /* CommonUtils.m in Sources */,
 				D8BC4E9D15DD297800B012B6 /* TapDetectingImageView.mm in Sources */,
+				2D879C1819016ACF00368C8D /* MBProgressHUD.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -536,7 +546,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Test_Prefix.pch;
 				INFOPLIST_FILE = "Test-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
@@ -563,7 +573,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Test_Prefix.pch;
 				INFOPLIST_FILE = "Test-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
@@ -653,7 +663,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Test_Prefix.pch;
 				INFOPLIST_FILE = "Test-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",

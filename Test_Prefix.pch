@@ -5,4 +5,4 @@
 
 #define kAddObserver(a,b) [[NSNotificationCenter defaultCenter] addObserver:self selector:a name:b object:nil];
 
-#define kPostNotif(a) [[NSNotificationCenter defaultCenter] postNotificationName:a object:nil userInfo:nil];
+#define kPostNotif(a,b) [[NSNotificationCenter defaultCenter] postNotificationName:a object:b userInfo:nil];

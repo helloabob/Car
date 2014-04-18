@@ -1,7 +1,7 @@
 #import "AppDelegate.h"
 #import "DemoViewController.h" 
 //#import "DataVerifier.h"
-#import "InputViewController.h"
+#import "MainViewController.h"
 
 #import <sys/utsname.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
@@ -31,10 +31,25 @@
 //		[alertView release];
 //	}
     
+    short a = -1;
+    unsigned short b = a;
+    NSLog(@"max:%d", b);
+    
+//    unsigned char aa = 0x7E;
+//    printf("aa:%x and add:%2s", aa, &aa);
+    
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+	[audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+    [audioSession setActive:YES error:nil];
+    AVAudioRecorder *recorder = [[[AVAudioRecorder alloc] initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/Documents/MySound.caf", NSHomeDirectory()]] settings:nil error:nil] autorelease];
+    [recorder record];
+    [recorder stop];
+    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/Documents/MySound.caf", NSHomeDirectory()] error:nil];
+    
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     self.window.backgroundColor = [UIColor whiteColor];
     
-    InputViewController *demo = [[[InputViewController alloc] init] autorelease];
+    MainViewController *demo = [[[MainViewController alloc] init] autorelease];
     UINavigationController *nav = [[[UINavigationController alloc] initWithRootViewController:demo] autorelease];
     nav.navigationBarHidden = YES;
     self.window.rootViewController = nav;

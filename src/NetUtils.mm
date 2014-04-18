@@ -7,6 +7,7 @@
 //
 
 #import "NetUtils.h"
+#import "CommonUtils.h"
 
 #ifdef __cplusplus
 #import "f2fdefs.h"
@@ -16,6 +17,15 @@ static NSString *_calleeid;
 static BOOL _firstCall;
 static BOOL bReadyToSendVideo=false;
 static BOOL bCallReady=false;
+
+#define kMaxBytes 539
+
+typedef struct {
+    unsigned char flag;
+    unsigned short pkg_len;
+    unsigned int serial;
+    unsigned char type;
+}UDPHeader;
 
 @interface NetUtils()
 @end
@@ -33,7 +43,8 @@ static BOOL bCallReady=false;
 int OnReady()
 {
 	printf("[%s]UI OnReady is called.\n",__FUNCTION__);
-    bReadyToSendVideo = true;
+//    bReadyToSendVideo = true;
+    kPostNotif(@"stateChange", @"onReady");
     return 1;
 }
 
@@ -59,10 +70,11 @@ void OnStatusNotify(int st, char* msg)
     
     //SM_HEARTBEATING			= 5,		// Heart-beating
     
-    if (_calleeid.length > 0 && strstr(msg, "(4) SM_NATDETECTREQ --->(5) SM_HEARTBEATING")){
+    if (strstr(msg, "(4) SM_NATDETECTREQ --->(5) SM_HEARTBEATING")){
         //            bCallReady = true;
         bCallReady=true;
-        
+        printf("callReay\n");
+        kPostNotif(@"stateChange",@"callReady");
     }
 }
 
@@ -89,6 +101,7 @@ void OnHangUp ()
 {
     printf("[%s]UI OnHangUp is called.\n",__FUNCTION__);
     bReadyToSendVideo = false;
+    kPostNotif(@"stateChange", @"onHangup");
 }
 
 void OnBuddyReceived(unsigned char* str, int len)
@@ -132,6 +145,30 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
     return sharedNetUtilsInstance;
 }
 
+- (void)initNetwork {
+    _ip = [[NSString alloc] initWithString:[CommonUtils localIPAddress]];
+    _port = 10241;
+    _pwd = [[NSString alloc] initWithString:@"888888"];
+    _callerid = @"0A:0A:0A:0A:0A:0A";
+    
+    F2FCBFUNCTIONS *cbfuncs=(F2FCBFUNCTIONS *)malloc(sizeof(F2FCBFUNCTIONS));
+    cbfuncs->OnReady = OnReady;
+    cbfuncs->OnCalleeVideo = OnCalleeVideo;
+    cbfuncs->OnCallerVideo = OnCallerVideo;
+    cbfuncs->OnCalleeNotify = OnCalleeNotify;
+    cbfuncs->OnStatusNotify = OnStatusNotify;
+    cbfuncs->OnHangUp = OnHangUp;
+    cbfuncs->OnBuddyReceived = OnBuddyReceived ;
+    cbfuncs->OnRegInfoReceived = OnRegInfoReceived;
+    cbfuncs->OnGetRegInfoAck = OnGetRegInfoAck;
+    cbfuncs->OnGetRegInfoByMobileAck = OnGetRegInfoByMobileAck;
+    f2fInit((char *)[_ip cStringUsingEncoding:NSUTF8StringEncoding], _port, (char *)[_pwd cStringUsingEncoding:NSUTF8StringEncoding], cbfuncs, (char *)[_callerid cStringUsingEncoding:NSUTF8StringEncoding]);
+}
+
+- (int)startCall:(NSString *)cid {
+    return startCall((char *)[cid cStringUsingEncoding:NSUTF8StringEncoding]);
+}
+
 - (void)connectWithIP:(NSString *)ip
           withPort:(uint32_t)port
            withPwd:(NSString *)pwd
@@ -150,8 +187,40 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
     [self performSelectorInBackground:@selector(thread_job) withObject:nil];
 }
 
-- (void)sendData:(NSData *)data {
-    sendData((unsigned char *)data.bytes, (int)data.length);
+- (void)startSendData:(NSData *)data {
+//    if (bReadyToSendVideo) {
+//        sendData((unsigned char *)data.bytes, (int)data.length);
+//    }
+    static unsigned int _serial = 0;
+    printf("data_length:%d", data.length);
+    unsigned long long bytesSent = 0;
+    while (data.length-bytesSent > 0) {
+        unsigned int bytesThisTime = 0;
+        if (data.length-bytesSent < kMaxBytes) {
+            bytesThisTime = data.length-bytesSent;
+        } else {
+            bytesThisTime = kMaxBytes;
+        }
+        NSRange range;
+        range.location = bytesSent;
+        range.length = bytesThisTime;
+        NSData *newData = [data subdataWithRange:range];
+        NSMutableData *_mdata = [NSMutableData data];
+        unsigned char flag = 0x7E;
+        unsigned short len = bytesThisTime+6;
+        unsigned int serial = _serial++;
+        unsigned char type = 0x0d;
+        unsigned char cs = 0;
+        [_mdata appendBytes:&flag length:1];
+        [_mdata appendBytes:&len length:2];
+        [_mdata appendBytes:&serial length:4];
+        [_mdata appendBytes:&type length:1];
+        [_mdata appendBytes:newData.bytes length:bytesThisTime];
+        [_mdata appendBytes:&cs length:1];
+        sendData((unsigned char *)_mdata.bytes, _mdata.length);
+        bytesSent += bytesThisTime;
+    }
+    printf("bytes_sent:%llu", bytesSent);
 }
 
 
@@ -186,7 +255,7 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
     cbfuncs.OnRegInfoReceived = OnRegInfoReceived;
     cbfuncs.OnGetRegInfoAck = OnGetRegInfoAck;
     cbfuncs.OnGetRegInfoByMobileAck = OnGetRegInfoByMobileAck;
-    f2fInit((char *)[_ip cStringUsingEncoding:NSUTF8StringEncoding], _port, (char *)[_pwd cStringUsingEncoding:NSUTF8StringEncoding], &cbfuncs, (char *)[_callerid cStringUsingEncoding:NSUTF8StringEncoding], (char *)[_calleeid cStringUsingEncoding:NSUTF8StringEncoding], (char *)[_callerid cStringUsingEncoding:NSUTF8StringEncoding]);
+    f2fInit((char *)[_ip cStringUsingEncoding:NSUTF8StringEncoding], _port, (char *)[_pwd cStringUsingEncoding:NSUTF8StringEncoding], &cbfuncs, (char *)[_callerid cStringUsingEncoding:NSUTF8StringEncoding]);
 //    char *lanip=(char *)[_ip cStringUsingEncoding:NSUTF8StringEncoding];
     
     [self performSelectorInBackground:@selector(send_thread) withObject:nil];
