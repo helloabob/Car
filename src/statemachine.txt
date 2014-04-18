@@ -1,0 +1,6 @@
+{" SM_BOOT ",  0, "  Just boot up "},
+{" SM_LOGINSVRIPREQ ",  1, "  Req for login_server_address "},
+{" SM_LOGINREQ ",  2, "  Req for login "},
+{" SM_WAITINGFWACK ",  3, "  Waiting for firewall_detect "},
+{" SM_NATDETECTREQ ",  4, "  Req for nat "},
+{" SM_HEARTBEATING ",  5, "  Heart-beating   "},

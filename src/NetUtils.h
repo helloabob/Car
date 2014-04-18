@@ -17,4 +17,6 @@
          withCallerId:(NSString *)callerId
          withCalleeId:(NSString *)cid;
 
+- (void)sendData:(NSData *)data;
+
 @end

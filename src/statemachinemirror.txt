@@ -1,0 +1,3 @@
+{" SMMIRROR_STANDBY ",  0, "  Ready to mirror "},
+{" SMMIRROR_FORWARDING ",  1, "  Forwarding pkts from "},
+{" SMMIRROR_INFORMSTATE ",  2, "  Informing state to "},

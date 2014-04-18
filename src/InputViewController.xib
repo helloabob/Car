@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="InputViewController">
             <connections>
+                <outlet property="btnSend" destination="QkX-EH-m26" id="6fQ-Mf-1gO"/>
                 <outlet property="btnStart" destination="BAx-Ro-Zcr" id="Um2-j9-eZU"/>
                 <outlet property="txtCallee" destination="rgy-uj-wr6" id="grg-uv-hkH"/>
                 <outlet property="txtIp" destination="bSG-7G-6z3" id="uh1-4s-DQe"/>
@@ -30,7 +31,7 @@
                         <outlet property="delegate" destination="-1" id="lkv-Ua-AR1"/>
                     </connections>
                 </textField>
-                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="11:22:33:44:55:67" borderStyle="roundedRect" placeholder="Terminal ID" minimumFontSize="17" id="SMM-fN-ZUY">
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="0A:0A:0A:0A:0A:0A" borderStyle="roundedRect" placeholder="Terminal ID" minimumFontSize="17" id="SMM-fN-ZUY">
                     <rect key="frame" x="0.0" y="85" width="320" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -39,7 +40,7 @@
                         <outlet property="delegate" destination="-1" id="iVF-W5-rob"/>
                     </connections>
                 </textField>
-                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="888888" borderStyle="roundedRect" placeholder="Port" minimumFontSize="17" id="uqJ-8g-e5f">
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="10241" borderStyle="roundedRect" placeholder="Port" minimumFontSize="17" id="uqJ-8g-e5f">
                     <rect key="frame" x="0.0" y="198" width="320" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -48,7 +49,7 @@
                         <outlet property="delegate" destination="-1" id="fOI-9X-xu2"/>
                     </connections>
                 </textField>
-                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="10241" borderStyle="roundedRect" placeholder="Password" minimumFontSize="17" id="3NL-u5-fMy">
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="888888" borderStyle="roundedRect" placeholder="Password" minimumFontSize="17" id="3NL-u5-fMy">
                     <rect key="frame" x="0.0" y="252" width="320" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -67,9 +68,17 @@
                     </connections>
                 </textField>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="BAx-Ro-Zcr">
-                    <rect key="frame" x="0.0" y="382" width="320" height="30"/>
+                    <rect key="frame" x="0.0" y="375" width="320" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <state key="normal" title="开始寻址">
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="QkX-EH-m26">
+                    <rect key="frame" x="0.0" y="418" width="320" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <state key="normal" title="发送数据">
                         <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>

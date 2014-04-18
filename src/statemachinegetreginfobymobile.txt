@@ -1,0 +1,3 @@
+{" SMREGINFOGETBYMOBILE_IDLE ",  0, "  Idle   "},
+{" SMREGINFOGETBYMOBILE_FETCHING ",  1, "  Fetching reg info "},
+{" SMREGINFOGETBYMOBILE_NOTIFIED ",  2, "  Notify app the "},

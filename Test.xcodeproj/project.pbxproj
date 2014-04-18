@@ -24,7 +24,6 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
-		2D640F0C1900144500838324 /* libf2fnet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D640F0B1900144500838324 /* libf2fnet.a */; };
 		2D640F101900147900838324 /* NetUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2D640F0F1900147900838324 /* NetUtils.mm */; };
 		2D640F1519001C6F00838324 /* InputViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D640F1319001C6F00838324 /* InputViewController.m */; };
 		2D640F1619001C6F00838324 /* InputViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2D640F1419001C6F00838324 /* InputViewController.xib */; };
@@ -82,6 +81,16 @@
 		507EEA7F15AF13D0000FA84E /* icon_r9_c30_s1.png in Resources */ = {isa = PBXBuildFile; fileRef = 507EEA4515AF13D0000FA84E /* icon_r9_c30_s1.png */; };
 		507EEA8015AF13D0000FA84E /* icon_r9_c33_s1.png in Resources */ = {isa = PBXBuildFile; fileRef = 507EEA4615AF13D0000FA84E /* icon_r9_c33_s1.png */; };
 		507EEA8115AF13D0000FA84E /* icon_r9_c5_s1.png in Resources */ = {isa = PBXBuildFile; fileRef = 507EEA4715AF13D0000FA84E /* icon_r9_c5_s1.png */; };
+		5A6170081900B05400B63B5B /* CommonUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A6170071900B05400B63B5B /* CommonUtils.m */; };
+		5A61701B1900F26600B63B5B /* cli_testsample_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5A6170111900F26600B63B5B /* cli_testsample_main.cpp */; };
+		5A61701C1900F26600B63B5B /* cli_testsample_public.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5A6170121900F26600B63B5B /* cli_testsample_public.cpp */; };
+		5A61701D1900F26600B63B5B /* protocol.cmd.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A6170141900F26600B63B5B /* protocol.cmd.txt */; };
+		5A61701E1900F26600B63B5B /* protocol.key.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A6170151900F26600B63B5B /* protocol.key.txt */; };
+		5A61701F1900F26600B63B5B /* statemachine.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A6170161900F26600B63B5B /* statemachine.txt */; };
+		5A6170201900F26600B63B5B /* statemachinecall.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A6170171900F26600B63B5B /* statemachinecall.txt */; };
+		5A6170211900F26600B63B5B /* statemachinegetreginfo.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A6170181900F26600B63B5B /* statemachinegetreginfo.txt */; };
+		5A6170221900F26600B63B5B /* statemachinegetreginfobymobile.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A6170191900F26600B63B5B /* statemachinegetreginfobymobile.txt */; };
+		5A6170231900F26600B63B5B /* statemachinemirror.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A61701A1900F26600B63B5B /* statemachinemirror.txt */; };
 		D8BC4E9915DD296D00B012B6 /* KKScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = D8BC4E9815DD296D00B012B6 /* KKScrollView.m */; };
 		D8BC4E9D15DD297800B012B6 /* TapDetectingImageView.mm in Sources */ = {isa = PBXBuildFile; fileRef = D8BC4E9C15DD297800B012B6 /* TapDetectingImageView.mm */; };
 		D8BC4E9F15DD2D5800B012B6 /* ttt1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D8BC4E9E15DD2D5800B012B6 /* ttt1.jpg */; };
@@ -108,10 +117,8 @@
 		1D6058910D05DD3D006BFB54 /* Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Test.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		2D640F0B1900144500838324 /* libf2fnet.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libf2fnet.a; sourceTree = "<group>"; };
 		2D640F0E1900147900838324 /* NetUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetUtils.h; sourceTree = "<group>"; };
 		2D640F0F1900147900838324 /* NetUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NetUtils.mm; sourceTree = "<group>"; };
-		2D640F111900149700838324 /* f2fdefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = f2fdefs.h; sourceTree = "<group>"; };
 		2D640F1219001C6F00838324 /* InputViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputViewController.h; sourceTree = "<group>"; };
 		2D640F1319001C6F00838324 /* InputViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputViewController.m; sourceTree = "<group>"; };
 		2D640F1419001C6F00838324 /* InputViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InputViewController.xib; sourceTree = "<group>"; };
@@ -176,6 +183,19 @@
 		507EEA4615AF13D0000FA84E /* icon_r9_c33_s1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_r9_c33_s1.png; sourceTree = "<group>"; };
 		507EEA4715AF13D0000FA84E /* icon_r9_c5_s1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_r9_c5_s1.png; sourceTree = "<group>"; };
 		507EEA4915AF13D0000FA84E /* spcaframe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spcaframe.h; sourceTree = "<group>"; };
+		5A6170061900B05400B63B5B /* CommonUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonUtils.h; sourceTree = "<group>"; };
+		5A6170071900B05400B63B5B /* CommonUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommonUtils.m; sourceTree = "<group>"; };
+		5A6170111900F26600B63B5B /* cli_testsample_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cli_testsample_main.cpp; sourceTree = "<group>"; };
+		5A6170121900F26600B63B5B /* cli_testsample_public.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cli_testsample_public.cpp; sourceTree = "<group>"; };
+		5A6170131900F26600B63B5B /* cli_testsample_public.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cli_testsample_public.h; sourceTree = "<group>"; };
+		5A6170141900F26600B63B5B /* protocol.cmd.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = protocol.cmd.txt; sourceTree = "<group>"; };
+		5A6170151900F26600B63B5B /* protocol.key.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = protocol.key.txt; sourceTree = "<group>"; };
+		5A6170161900F26600B63B5B /* statemachine.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = statemachine.txt; sourceTree = "<group>"; };
+		5A6170171900F26600B63B5B /* statemachinecall.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = statemachinecall.txt; sourceTree = "<group>"; };
+		5A6170181900F26600B63B5B /* statemachinegetreginfo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = statemachinegetreginfo.txt; sourceTree = "<group>"; };
+		5A6170191900F26600B63B5B /* statemachinegetreginfobymobile.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = statemachinegetreginfobymobile.txt; sourceTree = "<group>"; };
+		5A61701A1900F26600B63B5B /* statemachinemirror.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = statemachinemirror.txt; sourceTree = "<group>"; };
+		5A6170241900F26F00B63B5B /* f2fdefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = f2fdefs.h; sourceTree = "<group>"; };
 		D8BC4E9715DD296D00B012B6 /* KKScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKScrollView.h; sourceTree = "<group>"; };
 		D8BC4E9815DD296D00B012B6 /* KKScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKScrollView.m; sourceTree = "<group>"; };
 		D8BC4E9B15DD297800B012B6 /* TapDetectingImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapDetectingImageView.h; sourceTree = "<group>"; };
@@ -200,7 +220,6 @@
 				048D2AF415BE81EE005107BD /* AVFoundation.framework in Frameworks */,
 				0496AA0615C262CA00526976 /* AssetsLibrary.framework in Frameworks */,
 				0496AB9C15C2821800526976 /* AudioToolbox.framework in Frameworks */,
-				2D640F0C1900144500838324 /* libf2fnet.a in Frameworks */,
 				0489DC4615C6661D001AED2F /* OpenAL.framework in Frameworks */,
 				048B53ED15CBB26200147A8C /* SystemConfiguration.framework in Frameworks */,
 				047EDFEA15D0ADBE003A8C43 /* libfaac.dylib in Frameworks */,
@@ -222,7 +241,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				2D640F0B1900144500838324 /* libf2fnet.a */,
 				047EDFF215D0B157003A8C43 /* libfaac.a */,
 				047EDFD215D0ACA2003A8C43 /* libfaac.dylib */,
 				047D6A3815B68FD40049E389 /* default.png */,
@@ -262,9 +280,21 @@
 		2D640F0D1900145900838324 /* utils */ = {
 			isa = PBXGroup;
 			children = (
-				2D640F111900149700838324 /* f2fdefs.h */,
+				5A6170241900F26F00B63B5B /* f2fdefs.h */,
+				5A6170111900F26600B63B5B /* cli_testsample_main.cpp */,
+				5A6170121900F26600B63B5B /* cli_testsample_public.cpp */,
+				5A6170131900F26600B63B5B /* cli_testsample_public.h */,
+				5A6170141900F26600B63B5B /* protocol.cmd.txt */,
+				5A6170151900F26600B63B5B /* protocol.key.txt */,
+				5A6170161900F26600B63B5B /* statemachine.txt */,
+				5A6170171900F26600B63B5B /* statemachinecall.txt */,
+				5A6170181900F26600B63B5B /* statemachinegetreginfo.txt */,
+				5A6170191900F26600B63B5B /* statemachinegetreginfobymobile.txt */,
+				5A61701A1900F26600B63B5B /* statemachinemirror.txt */,
 				2D640F0E1900147900838324 /* NetUtils.h */,
 				2D640F0F1900147900838324 /* NetUtils.mm */,
+				5A6170061900B05400B63B5B /* CommonUtils.h */,
+				5A6170071900B05400B63B5B /* CommonUtils.m */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -403,9 +433,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A6170211900F26600B63B5B /* statemachinegetreginfo.txt in Resources */,
 				5008758915A74E0800A52053 /* icon.png in Resources */,
 				507EEA5415AF13D0000FA84E /* icon_r11_c13_s1.png in Resources */,
+				5A61701F1900F26600B63B5B /* statemachine.txt in Resources */,
 				507EEA5515AF13D0000FA84E /* icon_r11_c18_s1.png in Resources */,
+				5A6170201900F26600B63B5B /* statemachinecall.txt in Resources */,
 				2D640F1619001C6F00838324 /* InputViewController.xib in Resources */,
 				507EEA5615AF13D0000FA84E /* icon_r11_c24_s1.png in Resources */,
 				507EEA5715AF13D0000FA84E /* icon_r11_c30_s1.png in Resources */,
@@ -413,6 +446,7 @@
 				507EEA5915AF13D0000FA84E /* icon_r11_c5_s1.png in Resources */,
 				507EEA5A15AF13D0000FA84E /* icon_r13_c13_s1.png in Resources */,
 				507EEA5B15AF13D0000FA84E /* icon_r13_c18_s1.png in Resources */,
+				5A6170221900F26600B63B5B /* statemachinegetreginfobymobile.txt in Resources */,
 				507EEA5C15AF13D0000FA84E /* icon_r13_c24_s1.png in Resources */,
 				507EEA5D15AF13D0000FA84E /* icon_r13_c30_s1.png in Resources */,
 				507EEA5E15AF13D0000FA84E /* icon_r13_c33_s1.png in Resources */,
@@ -429,6 +463,7 @@
 				507EEA6915AF13D0000FA84E /* icon_r17_c46_s1.png in Resources */,
 				507EEA6A15AF13D0000FA84E /* icon_r18_c34_s1.png in Resources */,
 				507EEA6B15AF13D0000FA84E /* icon_r18_c39_s1.png in Resources */,
+				5A61701D1900F26600B63B5B /* protocol.cmd.txt in Resources */,
 				507EEA6C15AF13D0000FA84E /* icon_r19_c11_s1.png in Resources */,
 				507EEA6D15AF13D0000FA84E /* icon_r19_c19_s1.png in Resources */,
 				507EEA6E15AF13D0000FA84E /* icon_r19_c24_s1.png in Resources */,
@@ -438,12 +473,14 @@
 				507EEA7215AF13D0000FA84E /* icon_r2_c27_s1.png in Resources */,
 				507EEA7315AF13D0000FA84E /* icon_r2_c4_s1.png in Resources */,
 				507EEA7415AF13D0000FA84E /* icon_r4_c32_s1.png in Resources */,
+				5A61701E1900F26600B63B5B /* protocol.key.txt in Resources */,
 				507EEA7515AF13D0000FA84E /* icon_r4_c37_s1.png in Resources */,
 				507EEA7615AF13D0000FA84E /* icon_r5_c20_s1.png in Resources */,
 				507EEA7715AF13D0000FA84E /* icon_r5_c26_s1.png in Resources */,
 				507EEA7815AF13D0000FA84E /* icon_r5_c2_s1.png in Resources */,
 				507EEA7915AF13D0000FA84E /* icon_r5_c7_s1.png in Resources */,
 				507EEA7A15AF13D0000FA84E /* icon_r6_c32_s1.png in Resources */,
+				5A6170231900F26600B63B5B /* statemachinemirror.txt in Resources */,
 				507EEA7B15AF13D0000FA84E /* icon_r6_c37_s1.png in Resources */,
 				507EEA7C15AF13D0000FA84E /* icon_r9_c13_s1.png in Resources */,
 				507EEA7D15AF13D0000FA84E /* icon_r9_c18_s1.png in Resources */,
@@ -465,6 +502,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				507EEA4A15AF13D0000FA84E /* AppDelegate.m in Sources */,
+				5A61701C1900F26600B63B5B /* cli_testsample_public.cpp in Sources */,
 				2D640F101900147900838324 /* NetUtils.mm in Sources */,
 				507EEA4C15AF13D0000FA84E /* AsyncSocket.m in Sources */,
 				2D640F1519001C6F00838324 /* InputViewController.m in Sources */,
@@ -473,6 +511,8 @@
 				507EEA5215AF13D0000FA84E /* main.m in Sources */,
 				0489DC3115C66580001AED2F /* myAudio.m in Sources */,
 				D8BC4E9915DD296D00B012B6 /* KKScrollView.m in Sources */,
+				5A61701B1900F26600B63B5B /* cli_testsample_main.cpp in Sources */,
+				5A6170081900B05400B63B5B /* CommonUtils.m in Sources */,
 				D8BC4E9D15DD297800B012B6 /* TapDetectingImageView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

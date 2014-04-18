@@ -16,5 +16,6 @@
 @property (nonatomic, retain) IBOutlet UITextField *txtPwd;
 @property (nonatomic, retain) IBOutlet UITextField *txtCallee;
 @property (nonatomic, retain) IBOutlet UIButton *btnStart;
+@property (nonatomic, retain) IBOutlet UIButton *btnSend;
 
 @end

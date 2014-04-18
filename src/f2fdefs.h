@@ -162,7 +162,7 @@ typedef void (*cb_OnStatusNotify)(int len, char* msg);
 //被叫通知
 typedef void (*cb_OnCalleeNotify)(char* caller, SESSIONTYPE st);
 //准备好发送数据，包括音频、视频、文件、图片、激活信息等等
-typedef int (*cb_OnReady)();
+typedef int (*cb_OnReady)();  
 //收到被叫数据，包括音频、视频、文件、图片、激活信息等等
 typedef void (*cb_OnCalleeVideo)(unsigned char* data, int len);
 //收到主叫数据，包括音频、视频、文件、图片、激活信息等等

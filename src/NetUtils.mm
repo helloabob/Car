@@ -14,6 +14,8 @@
 
 static NSString *_calleeid;
 static BOOL _firstCall;
+static BOOL bReadyToSendVideo=false;
+static BOOL bCallReady=false;
 
 @interface NetUtils()
 @end
@@ -31,13 +33,13 @@ static BOOL _firstCall;
 int OnReady()
 {
 	printf("[%s]UI OnReady is called.\n",__FUNCTION__);
-    //	bReadyToSendVideo = true;
+    bReadyToSendVideo = true;
     return 1;
 }
 
 void OnCalleeVideo(unsigned char *data, int len)
 {
-	printf("[%s]UI received video data, len: %d, data: \"%s\"\n",__FUNCTION__, len, data);
+//	printf("[%s]UI received video data, len: %d, data: \"%s\"\n",__FUNCTION__, len, data);
 }
 
 void OnCallerVideo(unsigned char *data, int len)
@@ -49,23 +51,19 @@ void OnStatusNotify(int st, char* msg)
 {
     //    printf("OnStatusNotify\n");
     //#if 0
-    if (msg)
-        printf("[%s]UI received status callback:(%d)\"%s\"\n",__FUNCTION__, st, msg);
-    else
-        printf("[%s]UI received status callback:(%d)\n",__FUNCTION__, st);
+//    if (msg)
+//        printf("[%s]---------callback:(%d)\"%s\"---------\n",__FUNCTION__, st, msg);
+//    else
+//        printf("[%s]UI received status callback:(%d)\n",__FUNCTION__, st);
     //#endif
     
     //SM_HEARTBEATING			= 5,		// Heart-beating
-        if (_calleeid.length > 0 && (strstr(msg, "(4) SM_NATDETECTREQ --->(5) SM_HEARTBEATING"))){
-//            bCallReady = true;
-            if (_firstCall==YES) {
-                startCall((char *)[_calleeid cStringUsingEncoding:NSUTF8StringEncoding]);
-                NSLog(@"status_success");
-                kPostNotif(@"init");
-            }
-        }
     
-    
+    if (_calleeid.length > 0 && strstr(msg, "(4) SM_NATDETECTREQ --->(5) SM_HEARTBEATING")){
+        //            bCallReady = true;
+        bCallReady=true;
+        
+    }
 }
 
 void OnCalleeNotify(char* caller, SESSIONTYPE st)
@@ -75,7 +73,7 @@ void OnCalleeNotify(char* caller, SESSIONTYPE st)
     sessionAccept();
 }
 
-void* send_thread(void* ctx){
+//void* send_thread(void* ctx){
     //	char data[256];
     //	sprintf(data, "%s", "video data");
     //	while(!bQuitMainThread){
@@ -83,14 +81,14 @@ void* send_thread(void* ctx){
     //		if (bReadyToSendVideo)
     //			sendData((unsigned char*)data, (int)strlen(data));
     //	}
-	return NULL;
+//	return NULL;
     
-}
+//}
 
 void OnHangUp ()
 {
     printf("[%s]UI OnHangUp is called.\n",__FUNCTION__);
-    //    bReadyToSendVideo = false;
+    bReadyToSendVideo = false;
 }
 
 void OnBuddyReceived(unsigned char* str, int len)
@@ -147,11 +145,33 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
     if (isInited) {
         canStop = YES;
         usleep(200000);
+        f2fUnInit();
     }
     [self performSelectorInBackground:@selector(thread_job) withObject:nil];
 }
 
+- (void)sendData:(NSData *)data {
+    sendData((unsigned char *)data.bytes, (int)data.length);
+}
+
+
+- (void)send_thread {
+    while (!canStop) {
+        if (bReadyToSendVideo) {
+//            char data[]="video data22";
+//            sendData((unsigned char *)data, (int)strlen(data));
+//            static int count = 0;
+//            count ++;
+//            if (count >= 10) {
+//                bReadyToSendVideo = false;
+//            }
+        }
+        usleep(1000*1000);
+    }
+}
+
 - (void)thread_job {
+//    kAddObserver(@selector(<#selector#>), @"init");
     isInited = YES;
     canStop = NO;
     _firstCall = YES;
@@ -168,29 +188,37 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
     cbfuncs.OnGetRegInfoByMobileAck = OnGetRegInfoByMobileAck;
     f2fInit((char *)[_ip cStringUsingEncoding:NSUTF8StringEncoding], _port, (char *)[_pwd cStringUsingEncoding:NSUTF8StringEncoding], &cbfuncs, (char *)[_callerid cStringUsingEncoding:NSUTF8StringEncoding], (char *)[_calleeid cStringUsingEncoding:NSUTF8StringEncoding], (char *)[_callerid cStringUsingEncoding:NSUTF8StringEncoding]);
 //    char *lanip=(char *)[_ip cStringUsingEncoding:NSUTF8StringEncoding];
+    
+    [self performSelectorInBackground:@selector(send_thread) withObject:nil];
+    
     while (!canStop) {
-        usleep(100000);
+        if (_firstCall==YES && bCallReady==true) {
+            _firstCall = NO;
+            startCall((char *)[_calleeid cStringUsingEncoding:NSUTF8StringEncoding]);
+//            kPostNotif(@"init");
+        }
+        usleep(200*1000);
     }
 }
 
-- (void)test {
-    
-    F2FCBFUNCTIONS cbfuncs;
-    cbfuncs.OnReady = OnReady;
-    cbfuncs.OnCalleeVideo = OnCalleeVideo;
-    cbfuncs.OnCallerVideo = OnCallerVideo;
-    cbfuncs.OnCalleeNotify = OnCalleeNotify;
-    cbfuncs.OnStatusNotify = OnStatusNotify;
-    cbfuncs.OnHangUp = OnHangUp;
-    cbfuncs.OnBuddyReceived = OnBuddyReceived ;
-    cbfuncs.OnRegInfoReceived = OnRegInfoReceived;
-    cbfuncs.OnGetRegInfoAck = OnGetRegInfoAck;
-    cbfuncs.OnGetRegInfoByMobileAck = OnGetRegInfoByMobileAck;
-    /*test*/
-    f2fInit("127.0.0.1", 8000, "aaa", &cbfuncs, "terminal_id", NULL, NULL);
-    
-    CFRunLoopRun();
-    
-}
+//- (void)test {
+//    
+//    F2FCBFUNCTIONS cbfuncs;
+//    cbfuncs.OnReady = OnReady;
+//    cbfuncs.OnCalleeVideo = OnCalleeVideo;
+//    cbfuncs.OnCallerVideo = OnCallerVideo;
+//    cbfuncs.OnCalleeNotify = OnCalleeNotify;
+//    cbfuncs.OnStatusNotify = OnStatusNotify;
+//    cbfuncs.OnHangUp = OnHangUp;
+//    cbfuncs.OnBuddyReceived = OnBuddyReceived ;
+//    cbfuncs.OnRegInfoReceived = OnRegInfoReceived;
+//    cbfuncs.OnGetRegInfoAck = OnGetRegInfoAck;
+//    cbfuncs.OnGetRegInfoByMobileAck = OnGetRegInfoByMobileAck;
+//    /*test*/
+//    f2fInit("127.0.0.1", 8000, "aaa", &cbfuncs, "terminal_id", NULL, NULL);
+//    
+//    CFRunLoopRun();
+//    
+//}
 
 @end

@@ -1,0 +1,3 @@
+{" SMREGINFOGET_IDLE ",  0, "  Idle   "},
+{" SMREGINFOGET_FETCHING ",  1, "  Fetching reg info "},
+{" SMREGINFOGET_NOTIFIED ",  2, "  Notify app the "},
