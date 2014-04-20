@@ -8,6 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum {
+    CommandTypeAudio,
+    CommandTypeDirection,
+    CommandTypeRedMode,
+    CommandTypeRedSwitch,
+    CommandTypeState,
+}CommandType;
+
 @interface NetUtils : NSObject
 + (instancetype)sharedInstance;
 
@@ -18,6 +26,7 @@
          withCalleeId:(NSString *)cid;
 - (void)initNetwork;
 - (int)startCall:(NSString *)cid;
-- (void)startSendData:(NSData *)data;
+- (void)startSendData:(NSData *)data withType:(CommandType)type;
+- (void)startSendData:(int)cmd withType:(CommandType)type forLength:(int)length;
 
 @end

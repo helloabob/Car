@@ -1,6 +1,7 @@
 #import "DemoViewController.h"
 //#import "gmeNSF/Test.h"
 // #import "MmsPlayer.h"
+#import "NetUtils.h"
 
 #import "KKScrollView.h"
 
@@ -99,7 +100,7 @@ int deta=32;
     [[UIAccelerometer sharedAccelerometer] setDelegate:self];
 	
 	djSocket=[[DjSocket alloc]init];
-	djSocket.delegate=self;
+//	djSocket.delegate=self;
     
     mA=[[myAudio alloc] init];
     [mA startPlay];
@@ -432,6 +433,7 @@ int deta=32;
 		if (tag==34) { //开启红外灯
 			
 			[djSocket test:0x0E];
+            [[NetUtils sharedInstance] startSendData:0 withType:CommandTypeRedSwitch forLength:1];
 			
 			myButton1 = (UIButton *)[self.view viewWithTag:34];
 			myButton2 = (UIButton *)[self.view viewWithTag:35];
@@ -445,6 +447,8 @@ int deta=32;
 		}
 		if (tag==35) { //关闭红外灯
 			[djSocket test:0x0F];
+            [[NetUtils sharedInstance] startSendData:1 withType:CommandTypeRedSwitch forLength:1];
+            
 			myButton1 = (UIButton *)[self.view viewWithTag:35];
 			myButton2 = (UIButton *)[self.view viewWithTag:34];
 			
@@ -740,33 +744,38 @@ int deta=32;
             if (moveX>=.3&&moveY>-.3) {//右上
                 //[djSocket test:9];
                 [djSocket test:0x14];
+                [[NetUtils sharedInstance] startSendData:5 withType:CommandTypeDirection forLength:1];
             }
             
             else if (moveX<=-.3&&moveY>-.3) {//左上
                 //[djSocket test:9];
                 [djSocket test:0x12];
+                [[NetUtils sharedInstance] startSendData:3 withType:CommandTypeDirection forLength:1];
             }
             else if (moveX>=.3&&moveY<=-.3) {//右下
                 //[djSocket test:9];
                 [djSocket test:0x17];
+                [[NetUtils sharedInstance] startSendData:6 withType:CommandTypeDirection forLength:1];
             }
             
             else if (moveX<=-.3&&moveY<=-.3) {//左下
                 //[djSocket test:9];
                 [djSocket test:0x15];
+                [[NetUtils sharedInstance] startSendData:4 withType:CommandTypeDirection forLength:1];
             }
             
             else if (fabs(moveX)<.3&&moveY>=.3) {//往前
                 [djSocket test:0x13];
-                
+                [[NetUtils sharedInstance] startSendData:1 withType:CommandTypeDirection forLength:1];
             }
             
             else if (fabs(moveX)<.3&&moveY<=-.3) {//往后
                 [djSocket test:0x16];
-                
+                [[NetUtils sharedInstance] startSendData:6 withType:CommandTypeDirection forLength:1];
             }
             else{//停止
             	[djSocket test:0x09];
+                [[NetUtils sharedInstance] startSendData:0 withType:CommandTypeDirection forLength:1];
             }
         }
     }

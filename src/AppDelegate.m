@@ -49,7 +49,7 @@
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     self.window.backgroundColor = [UIColor whiteColor];
     
-    MainViewController *demo = [[[MainViewController alloc] init] autorelease];
+    DemoViewController *demo = [[[DemoViewController alloc] init] autorelease];
     UINavigationController *nav = [[[UINavigationController alloc] initWithRootViewController:demo] autorelease];
     nav.navigationBarHidden = YES;
     self.window.rootViewController = nav;

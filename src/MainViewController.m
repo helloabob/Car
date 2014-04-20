@@ -10,6 +10,7 @@
 #import "NetUtils.h"
 #import "MBProgressHUD.h"
 #import <AVFoundation/AVFoundation.h>
+#import "DemoViewController.h"
 
 #define WAVE_UPDATE_FREQUENCY   0.05
 
@@ -19,7 +20,6 @@
     UIView *viewDial;
     UIView *viewSpeak;
     NSTimer * timer_;
-
 }
 
 @property(nonatomic,retain) AVAudioRecorder * recorder;
@@ -55,8 +55,17 @@
     [self.view addSubview:viewSpeak];
     [self.view bringSubviewToFront:viewDial];
     
-    txtCalleeId = [[[UITextField alloc] initWithFrame:CGRectMake(20, 100, 280, 30)] autorelease];
-    txtCalleeId.font = [UIFont boldSystemFontOfSize:20.0];
+    
+    UILabel *lbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 40)];
+    lbl.text = @"终端号:";
+    lbl.textAlignment = NSTextAlignmentCenter;
+    lbl.font = [UIFont systemFontOfSize:14];
+    txtCalleeId = [[[UITextField alloc] initWithFrame:CGRectMake(20, 220, 280, 40)] autorelease];
+    txtCalleeId.leftView = lbl;
+    txtCalleeId.leftViewMode = UITextFieldViewModeAlways;
+    txtCalleeId.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    txtCalleeId.clearButtonMode = UITextFieldViewModeAlways;
+    txtCalleeId.font = [UIFont systemFontOfSize:14];
     txtCalleeId.backgroundColor = [UIColor whiteColor];
     txtCalleeId.textColor = [UIColor blackColor];
     txtCalleeId.delegate = self;
@@ -65,10 +74,11 @@
     txtCalleeId.text = @"00:AA:BB:CC:DD:EE";
     [viewDial addSubview:txtCalleeId];
     
-    UIButton *btn = [[[UIButton alloc] initWithFrame:CGRectMake(20, 180, 280, 30)] autorelease];
-    [btn setTitle:@"拨号" forState:UIControlStateNormal];
+    UIButton *btn = [[[UIButton alloc] initWithFrame:CGRectMake(20, 300, 280, 40)] autorelease];
+    [btn setTitle:@"寻址" forState:UIControlStateNormal];
+    btn.layer.cornerRadius = 10;
     [btn addTarget:self action:@selector(call) forControlEvents:UIControlEventTouchUpInside];
-    btn.backgroundColor = [UIColor greenColor];
+    btn.backgroundColor = [UIColor colorWithRed:0 green:0.6 blue:0 alpha:1];
     [viewDial addSubview:btn];
     
     btn = [[[UIButton alloc] initWithFrame:CGRectMake(110, 180, 100, 100)] autorelease];
@@ -83,7 +93,12 @@
     
     
     kAddObserver(@selector(stateChange:), @"stateChange");
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [self initNetwork];
+}
+
+- (void)initNetwork {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"网络初始化...";
     [[NetUtils sharedInstance] initNetwork];
 }
 
@@ -96,12 +111,18 @@
 - (void)recordEnd {
     [self stopRecordWithCompletionBlock:^{
         NSData *data = [NSData dataWithContentsOfFile:[NSString stringWithFormat:@"%@/Documents/MySound.caf", NSHomeDirectory()]];
-//        NSLog(@"len:%d", data);
-        [[NetUtils sharedInstance] startSendData:data];
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.labelText = @"发送语音...";
+        [[NetUtils sharedInstance] startSendData:data withType:CommandTypeAudio];
+        [self performSelector:@selector(hideHUD) withObject:nil afterDelay:1.0f];
     }];
 }
 - (void)recordCancel {
     [self cancelled];
+}
+
+- (void)hideHUD {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
 - (void)stateChange:(NSNotification *)notfi {
@@ -112,12 +133,15 @@
     } else if ([state isEqualToString:@"onReady"]) {
         dispatch_async(dispatch_get_main_queue(), ^(){[MBProgressHUD hideHUDForView:self.view animated:YES];[self.view bringSubviewToFront:viewSpeak];});
     } else if ([state isEqualToString:@"onHangup"]) {
-        dispatch_async(dispatch_get_main_queue(), ^(){[self.view bringSubviewToFront:viewDial];});
+        dispatch_async(dispatch_get_main_queue(), ^(){[MBProgressHUD hideHUDForView:self.view animated:YES];[self.view bringSubviewToFront:viewDial];});
+    } else if ([state isEqualToString:@"sigpipe"]) {
+        dispatch_async(dispatch_get_main_queue(), ^(){[self.view bringSubviewToFront:viewDial];[self initNetwork];});
     }
 }
 
 - (void)call {
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"寻址中...";
     int result = [[NetUtils sharedInstance] startCall:txtCalleeId.text];
     NSLog(@"call_result:%d", result);
 }
@@ -156,10 +180,12 @@
 	}
 	
 	NSMutableDictionary * recordSetting = [NSMutableDictionary dictionary];
-	
 	[recordSetting setValue :[NSNumber numberWithInt:kAudioFormatLinearPCM] forKey:AVFormatIDKey];
 	[recordSetting setValue:[NSNumber numberWithFloat:8000.0] forKey:AVSampleRateKey];
-	[recordSetting setValue:[NSNumber numberWithInt:2] forKey:AVNumberOfChannelsKey];
+	[recordSetting setValue:[NSNumber numberWithInt:1] forKey:AVNumberOfChannelsKey];
+    [recordSetting setValue:[NSNumber numberWithInt:16] forKeyPath:AVLinearPCMBitDepthKey];
+    [recordSetting setValue :[NSNumber numberWithBool:NO] forKey:AVLinearPCMIsBigEndianKey];
+    [recordSetting setValue :[NSNumber numberWithBool:NO] forKey:AVLinearPCMIsFloatKey];
 	
     /*
      [recordSetting setValue :[NSNumber numberWithInt:16] forKey:AVLinearPCMBitDepthKey];
@@ -228,7 +254,7 @@
 -(void) stopRecordWithCompletionBlock:(void (^)())completion
 {
     dispatch_async(dispatch_get_main_queue(),completion);
-    
+    [self cancelRecording];
     [self resetTimer];
 //    [self showVoiceHudOrHide:NO];
 }

@@ -12,7 +12,7 @@
 @implementation DjSocket
 @synthesize imgView;
 @synthesize label;
-@synthesize delegate;
+//@synthesize delegate;
 @synthesize image;
 
 @synthesize scrollView;
@@ -58,7 +58,7 @@ int timestamp;
 	for(int i=0,f=sendData.length-1;i<f;i++){
 		d[f]+=d[i];
 	}	
-	[socket writeData:sendData withTimeout:-1 tag:0];
+//	[socket writeData:sendData withTimeout:-1 tag:0];
 	
     [sendData release];
 }
@@ -209,10 +209,10 @@ int timestamp;
 -(void)connect{
 	NSError *err = [[NSError alloc]init];
 //	BOOL b=[socket connectToHost:@"163.125.84.233" onPort:8000 withTimeout:-1 error:&err];
-	BOOL b=[socket connectToHost:@"192.168.1.11" onPort:8000 withTimeout:-1 error:&err];
-	if (!b){
-		NSLog(@"failed err=%@",err);
-	}
+//	BOOL b=[socket connectToHost:@"192.168.1.11" onPort:8000 withTimeout:-1 error:&err];
+//	if (!b){
+//		NSLog(@"failed err=%@",err);
+//	}
 	[err release];
 }
 
@@ -489,7 +489,7 @@ int timestamp;
 #pragma mark socket
 - (id)init{
     if (self = [super init]){
-        socket = [[AsyncSocket alloc] initWithDelegate:self];		
+//        socket = [[AsyncSocket alloc] initWithDelegate:self];		
 		jpgData=[[NSMutableData alloc]init];
 		
         imgView=[[UIImageView alloc] initWithFrame:CGRectMake(0,0,320,480)];
@@ -506,13 +506,13 @@ int timestamp;
 }
 
 - (void)onSocket:(AsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port{
-	[delegate djSocket:self connectedStatusChange:YES];
-    [socket readDataWithTimeout:-1 tag:0];
+//	[delegate djSocket:self connectedStatusChange:YES];
+//    [socket readDataWithTimeout:-1 tag:0];
 }
 
 
 - (void)onSocketDidDisconnect:(AsyncSocket *)sock{
-	[delegate djSocket:self connectedStatusChange:NO];
+//	[delegate djSocket:self connectedStatusChange:NO];
     position=0;
    	[self connect];
    
@@ -526,11 +526,11 @@ int timestamp;
     NSLog(@"--did receive video ---\n");
     
 	[self on_Recv:(char*)[data bytes] length:[data length]];
-    [socket readDataWithTimeout:-1 tag:0];
+//    [socket readDataWithTimeout:-1 tag:0];
 }
 
 -(void)dealloc{
-    [socket release];
+//    [socket release];
 	[jpgData release];
 	[imgView release];
     [scrollView release];

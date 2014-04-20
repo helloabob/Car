@@ -18,6 +18,8 @@ static BOOL _firstCall;
 static BOOL bReadyToSendVideo=false;
 static BOOL bCallReady=false;
 
+F2FCBFUNCTIONS *cbfuncs__;
+
 #define kMaxBytes 539
 
 typedef struct {
@@ -51,6 +53,7 @@ int OnReady()
 void OnCalleeVideo(unsigned char *data, int len)
 {
 //	printf("[%s]UI received video data, len: %d, data: \"%s\"\n",__FUNCTION__, len, data);
+    
 }
 
 void OnCallerVideo(unsigned char *data, int len)
@@ -69,6 +72,8 @@ void OnStatusNotify(int st, char* msg)
     //#endif
     
     //SM_HEARTBEATING			= 5,		// Heart-beating
+    
+    NSLog(@"--------------status------------\n%s\n", msg);
     
     if (strstr(msg, "(4) SM_NATDETECTREQ --->(5) SM_HEARTBEATING")){
         //            bCallReady = true;
@@ -141,28 +146,46 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
     static NetUtils *sharedNetUtilsInstance = nil;
     static dispatch_once_t predicate; dispatch_once(&predicate, ^{
         sharedNetUtilsInstance = [[self alloc] init];
+//        signal(SIGPIPE,SIG_IGN);
+        struct sigaction sa;
+        sa.sa_handler = new_sa_handler;
+        sigaction(SIGPIPE, &sa, 0);
     });
     return sharedNetUtilsInstance;
 }
 
+void new_sa_handler(int){
+    NSLog(@"--------catch_pipe_signal---------");
+    f2fUnInit();
+    free(cbfuncs__);
+    kPostNotif(@"stateChange", @"sigpipe");
+}
+
+//- (void)dispose {
+//    free(cbfuncs);
+//}
+
 - (void)initNetwork {
-    _ip = [[NSString alloc] initWithString:[CommonUtils localIPAddress]];
+//    _ip = [[NSString alloc] initWithString:[CommonUtils localIPAddress]];
+    _ip = [CommonUtils localIPAddress];
     _port = 10241;
-    _pwd = [[NSString alloc] initWithString:@"888888"];
+    _pwd = @"888888";
+//    _pwd = [[NSString alloc] initWithString:@"888888"];
     _callerid = @"0A:0A:0A:0A:0A:0A";
+//    _callerid = @"12345678901234567";
     
-    F2FCBFUNCTIONS *cbfuncs=(F2FCBFUNCTIONS *)malloc(sizeof(F2FCBFUNCTIONS));
-    cbfuncs->OnReady = OnReady;
-    cbfuncs->OnCalleeVideo = OnCalleeVideo;
-    cbfuncs->OnCallerVideo = OnCallerVideo;
-    cbfuncs->OnCalleeNotify = OnCalleeNotify;
-    cbfuncs->OnStatusNotify = OnStatusNotify;
-    cbfuncs->OnHangUp = OnHangUp;
-    cbfuncs->OnBuddyReceived = OnBuddyReceived ;
-    cbfuncs->OnRegInfoReceived = OnRegInfoReceived;
-    cbfuncs->OnGetRegInfoAck = OnGetRegInfoAck;
-    cbfuncs->OnGetRegInfoByMobileAck = OnGetRegInfoByMobileAck;
-    f2fInit((char *)[_ip cStringUsingEncoding:NSUTF8StringEncoding], _port, (char *)[_pwd cStringUsingEncoding:NSUTF8StringEncoding], cbfuncs, (char *)[_callerid cStringUsingEncoding:NSUTF8StringEncoding]);
+    cbfuncs__=(F2FCBFUNCTIONS *)malloc(sizeof(F2FCBFUNCTIONS));
+    cbfuncs__->OnReady = OnReady;
+    cbfuncs__->OnCalleeVideo = OnCalleeVideo;
+    cbfuncs__->OnCallerVideo = OnCallerVideo;
+    cbfuncs__->OnCalleeNotify = OnCalleeNotify;
+    cbfuncs__->OnStatusNotify = OnStatusNotify;
+    cbfuncs__->OnHangUp = OnHangUp;
+    cbfuncs__->OnBuddyReceived = OnBuddyReceived ;
+    cbfuncs__->OnRegInfoReceived = OnRegInfoReceived;
+    cbfuncs__->OnGetRegInfoAck = OnGetRegInfoAck;
+    cbfuncs__->OnGetRegInfoByMobileAck = OnGetRegInfoByMobileAck;
+    f2fInit((char *)[_ip cStringUsingEncoding:NSUTF8StringEncoding], _port, (char *)[_pwd cStringUsingEncoding:NSUTF8StringEncoding], cbfuncs__, (char *)[_callerid cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
 - (int)startCall:(NSString *)cid {
@@ -187,12 +210,29 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
     [self performSelectorInBackground:@selector(thread_job) withObject:nil];
 }
 
-- (void)startSendData:(NSData *)data {
-//    if (bReadyToSendVideo) {
-//        sendData((unsigned char *)data.bytes, (int)data.length);
-//    }
+- (unsigned char)convertCommandTypeToBytes:(CommandType)type {
+    if (type == CommandTypeAudio) {
+        return 0x0d;
+    } else if (type == CommandTypeDirection) {
+        return 0x0a;
+    } else if (type == CommandTypeRedMode) {
+        return 0x06;
+    } else if (type == CommandTypeRedSwitch) {
+        return 0x07;
+    } else if (type == CommandTypeState) {
+        return 0x08;
+    } else {
+        return 0x00;
+    }
+}
+
+- (void)startSendData:(int)cmd withType:(CommandType)type forLength:(int)length {
+    NSData *data = [NSData dataWithBytes:&cmd length:length];
+    return [self startSendData:data withType:type];
+}
+
+- (void)startSendData:(NSData *)data withType:(CommandType)type {
     static unsigned int _serial = 0;
-    printf("data_length:%d", data.length);
     unsigned long long bytesSent = 0;
     while (data.length-bytesSent > 0) {
         unsigned int bytesThisTime = 0;
@@ -209,18 +249,23 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
         unsigned char flag = 0x7E;
         unsigned short len = bytesThisTime+6;
         unsigned int serial = _serial++;
-        unsigned char type = 0x0d;
-        unsigned char cs = 0;
+        unsigned char cmd = [self convertCommandTypeToBytes:type];
+        unsigned char cs = 0x00;
         [_mdata appendBytes:&flag length:1];
         [_mdata appendBytes:&len length:2];
         [_mdata appendBytes:&serial length:4];
-        [_mdata appendBytes:&type length:1];
+        [_mdata appendBytes:&cmd length:1];
         [_mdata appendBytes:newData.bytes length:bytesThisTime];
         [_mdata appendBytes:&cs length:1];
+        
+        char *d=(char *)_mdata.bytes;
+        for(int i=0,f=_mdata.length-1;i<f;i++){
+            d[f]+=d[i];
+        }
+        NSLog(@"sendData:%@", _mdata);
         sendData((unsigned char *)_mdata.bytes, _mdata.length);
         bytesSent += bytesThisTime;
     }
-    printf("bytes_sent:%llu", bytesSent);
 }
 
 

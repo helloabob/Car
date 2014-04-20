@@ -360,19 +360,19 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 -(void)connect{
 	NSLog(@"8001 connecting...");
 	NSError *err = [[NSError alloc]init];
-	BOOL b=[socket connectToHost:@"192.168.1.11" onPort:8001 withTimeout:-1 error:&err];
+//	BOOL b=[socket connectToHost:@"192.168.1.11" onPort:8001 withTimeout:-1 error:&err];
  //   BOOL b=[socket connectToHost:@"163.125.84.233" onPort:8001 withTimeout:-1 error:&err];
-	if (!b){
-		NSLog(@"failed err=%@",err);
-	}
+//	if (!b){
+//		NSLog(@"failed err=%@",err);
+//	}
 	[err release];
 }
 
 
 - (id)init{
     if (self = [super init]){
-        socket = [[[[AsyncSocket alloc] initWithDelegate:self] autorelease]retain];
-        NSLog(@"myaudio init: socket=%@",socket);
+//        socket = [[[[AsyncSocket alloc] initWithDelegate:self] autorelease]retain];
+//        NSLog(@"myaudio init: socket=%@",socket);
 		[self connect];
 		
 		
@@ -388,7 +388,7 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 
 - (void)onSocket:(AsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port{
 	NSLog(@"8001 connect success");
-    [socket readDataWithTimeout:-1 tag:0];
+//    [socket readDataWithTimeout:-1 tag:0];
 }
 - (void)onSocketDidDisconnect:(AsyncSocket *)sock{
 	NSLog(@"8001 faild");
@@ -400,16 +400,16 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 
 - (void)onSocket:(AsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag{
 	[self on_Recv:(char*)[data bytes] length:[data length]];
-    [socket readDataWithTimeout:-1 tag:0];
+//    [socket readDataWithTimeout:-1 tag:0];
 }
 
 -(void)dealloc{
 	//[self stopSound];
 	
 	[self cleanUpOpenAL];
-    NSLog(@"myAudio dealloc release开始:socket:%@",socket);
-    [socket release];
-    socket = nil;
+//    NSLog(@"myAudio dealloc release开始:socket:%@",socket);
+//    [socket release];
+//    socket = nil;
     [super dealloc];
 }
 

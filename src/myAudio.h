@@ -32,7 +32,7 @@
 	int pos2;
 	
 	//NSMutableData *mData;
-	AsyncSocket *socket;
+//	AsyncSocket *socket;
     
     //DjSocket *mV;
 	

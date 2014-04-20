@@ -14,8 +14,8 @@
 
 
 @interface DjSocket : NSObject{
-    AsyncSocket *socket;
-	id<DjSocketDelegate> delegate;
+//    AsyncSocket *socket;
+//	id<DjSocketDelegate> delegate;
 	NSMutableData *jpgData;
 	UIImageView *imgView;
     KKScrollView *scrollView;
@@ -30,7 +30,7 @@
 }
 @property(nonatomic,assign)UIImageView *imgView;
 @property(nonatomic,assign)UILabel*label;
-@property(nonatomic,assign)id<DjSocketDelegate> delegate;
+//@property(nonatomic,assign)id<DjSocketDelegate> delegate;
 @property(nonatomic,assign)UIImage *image;
 
 
