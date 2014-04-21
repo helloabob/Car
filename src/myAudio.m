@@ -314,6 +314,59 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 	
 }  
 */
+
+- (void)onReceivedData:(unsigned char*)data length:(int)length {
+    NSLog(@"recei_audio_data");
+//    static short requestLength=0;
+	int pos=0;
+    
+	position = 0;
+	if (isPlay == 0)
+	{
+        [self clearBuffer];
+		return;
+	}
+	if(length > 1200)
+	{
+        [self clearBuffer];
+		return;
+	}
+//	while (YES) {
+		//∂¡header
+		if(data[pos] != 0x7e)	return;
+		position = 0;
+        unsigned short requestLength;
+        [[NSData dataWithBytes:&data[1] length:2] getBytes:&requestLength length:2];
+        [self openAudioFromQueue:&data[8] dataSize:requestLength];
+//        
+//		while (position<sizeof(struct Tphead) && length-pos>0) {
+//			header[position]=data[pos];
+//			position++;
+//			pos++;
+//		}
+//		//header √ª∂¡ÕÍ
+//		if (position<sizeof(struct Tphead)) {
+//			return;
+//		}
+//		requestLength=((struct Tphead*)header)->bodylen;
+//		if (requestLength == 0) {
+//			continue;
+//		}
+//		
+//		//∂¡body
+//		while (position<requestLength+sizeof(struct Tphead) && length-pos>0) {
+//			buff[position-sizeof(struct Tphead)]=data[pos];
+//			position++;
+//			pos++;
+//		}
+//		if (position==requestLength+sizeof(struct Tphead)){
+//			[self openAudioFromQueue:buff dataSize:(UInt32)requestLength];
+//			position=0;
+//		}
+//		else
+//			return;
+//	}
+}
 -(void)on_Recv:(char*)data length:(int)length{
 	static short requestLength=0;
 	int pos=0;
@@ -362,6 +415,111 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 	}
 }
 
+static void HandleInputBuffer (void *aqData, AudioQueueRef inAQ, AudioQueueBufferRef inBuffer, const AudioTimeStamp *inStartTime,
+							   UInt32 inNumPackets, const AudioStreamPacketDescription *inPacketDesc)
+{
+    RecordState *pAqData = (RecordState *) aqData;
+    
+    if (inNumPackets == 0 && pAqData->dataFormat.mBytesPerPacket != 0)
+        inNumPackets = inBuffer->mAudioDataByteSize / pAqData->dataFormat.mBytesPerPacket;
+    
+    if (AudioFileWritePackets(pAqData->audioFile, NO, inBuffer->mAudioDataByteSize, inPacketDesc, pAqData->currentPacket, &inNumPackets, inBuffer->mAudioData) == noErr)
+    {
+        [[NetUtils sharedInstance] startSendData:[NSData dataWithBytes:inBuffer->mAudioData length:inBuffer->mAudioDataByteSize] withType:CommandTypeAudio];
+        pAqData->currentPacket += inNumPackets;
+        if (pAqData->recording == 0) return;
+        AudioQueueEnqueueBuffer (pAqData->queue, inBuffer, 0, NULL);
+    }
+}
+
+void DeriveBufferSize (AudioQueueRef audioQueue, AudioStreamBasicDescription ASBDescription, Float64 seconds, UInt32 *outBufferSize)
+{
+    static const int maxBufferSize = 0x50000; // punting with 50k
+    int maxPacketSize = ASBDescription.mBytesPerPacket;
+    if (maxPacketSize == 0)
+	{
+        UInt32 maxVBRPacketSize = sizeof(maxPacketSize);
+        AudioQueueGetProperty(audioQueue, kAudioConverterPropertyMaximumOutputPacketSize, &maxPacketSize, &maxVBRPacketSize);
+    }
+    
+    Float64 numBytesForTime = ASBDescription.mSampleRate * maxPacketSize * seconds;
+    *outBufferSize =  (UInt32)((numBytesForTime < maxBufferSize) ? numBytesForTime : maxBufferSize);
+}
+
+- (BOOL) startRecording: (NSString *) filePath
+{
+	// file url
+    AVAudioSession * audioSession = [AVAudioSession sharedInstance];
+    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error: nil];
+    [audioSession setActive:YES error: nil];
+    AudioStreamBasicDescription *format = &recordState.dataFormat;
+    format->mSampleRate = 8000.0;
+    format->mFormatID = kAudioFormatLinearPCM;
+    format->mFormatFlags = kLinearPCMFormatFlagIsBigEndian |  kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+    //    format->mFormatFlags = kLinearPCMFormatFlagIsSignedInteger|kLinearPCMFormatFlagIsPacked;
+    format->mChannelsPerFrame = 1; // mono
+    format->mBitsPerChannel = 16;
+    format->mFramesPerPacket = 1;
+    format->mBytesPerPacket = 2;
+    format->mBytesPerFrame = 2;
+    format->mReserved = 0;
+    CFURLRef fileURL =  CFURLCreateFromFileSystemRepresentation(NULL, (const UInt8 *) [filePath UTF8String], [filePath length], NO);
+    // recordState.currentPacket = 0;
+    
+	// new input queue
+    OSStatus status;
+    status = AudioQueueNewInput(&recordState.dataFormat, HandleInputBuffer, &recordState, CFRunLoopGetCurrent(),kCFRunLoopCommonModes, 0, &recordState.queue);
+    if (status) {CFRelease(fileURL); printf("Could not establish new queue\n"); return NO;}
+    
+	// create new audio file
+    status = AudioFileCreateWithURL(fileURL, kAudioFileAIFFType, &recordState.dataFormat, kAudioFileFlags_EraseFile, &recordState.audioFile);
+	CFRelease(fileURL); // thanks august joki
+    if (status) {printf("Could not create file to record audio\n"); return NO;}
+    
+	// figure out the buffer size
+    DeriveBufferSize(recordState.queue, recordState.dataFormat, 0.5, &recordState.bufferByteSize);
+	
+	// allocate those buffers and enqueue them
+    for(int i = 0; i < NUM_BUFFERS; i++)
+    {
+        status = AudioQueueAllocateBuffer(recordState.queue, recordState.bufferByteSize, &recordState.buffers[i]);
+        if (status) {printf("Error allocating buffer %d\n", i); return NO;}
+        
+        status = AudioQueueEnqueueBuffer(recordState.queue, recordState.buffers[i], 0, NULL);
+        if (status) {printf("Error enqueuing buffer %d\n", i); return NO;}
+    }
+	
+	// enable metering
+    UInt32 enableMetering = YES;
+    status = AudioQueueSetProperty(recordState.queue, kAudioQueueProperty_EnableLevelMetering, &enableMetering,sizeof(enableMetering));
+    if (status) {printf("Could not enable metering\n"); return NO;}
+    
+	// start recording
+    status = AudioQueueStart(recordState.queue, NULL);
+    if (status) {printf("Could not start Audio Queue\n"); return NO;}
+    recordState.currentPacket = 0;
+    recordState.recording = YES;
+    return YES;
+}
+
+- (void) stopRecording
+{
+    [self performSelector:@selector(reallyStopRecording) withObject:NULL afterDelay:1.0f];
+}
+
+- (void) reallyStopRecording
+{
+    AudioQueueFlush(recordState.queue);
+    AudioQueueStop(recordState.queue, NO);
+    recordState.recording = NO;
+    
+    for(int i = 0; i < NUM_BUFFERS; i++)
+		AudioQueueFreeBuffer(recordState.queue, recordState.buffers[i]);
+    
+    AudioQueueDispose(recordState.queue, YES);
+    AudioFileClose(recordState.audioFile);
+}
+
 #pragma mark socket
 
 -(void)connect{
@@ -390,10 +548,6 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 		
     }
     return self;
-}
-
-- (void)onReceivedData:(NSData *)data {
-    NSLog(@"recei_audio_data");
 }
 
 - (void)onSocket:(AsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port{

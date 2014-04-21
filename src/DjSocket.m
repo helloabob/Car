@@ -160,8 +160,34 @@ int timestamp;
     return timestamp;
 }
 
-- (void)onReceivedData:(NSData *)data {
+- (void)onReceivedData:(unsigned char*)data length:(int)length {
     NSLog(@"recei_video_data");
+    int pos=0;
+    
+	position = 0;
+    //	while (YES) {
+    //∂¡header
+    if(data[pos] != 0x7e)	return;
+    position = 0;
+    unsigned short requestLength;
+    [[NSData dataWithBytes:&data[1] length:2] getBytes:&requestLength length:2];
+    /**/
+    char *tvData = (char *)&data[8];
+    
+    [jpgData appendBytes:&tvData[3] length:requestLength-3];
+    
+	if(tvData[1]-1==tvData[2])
+	{
+		image = [[UIImage alloc] initWithData:jpgData];
+		//if (isCamera){
+		//	sleep(1);
+		//	[self saveScreen];
+		//}
+		[self performSelectorOnMainThread:@selector(aa) withObject:nil waitUntilDone:!NO];
+		
+		
+		jpgData.length=0;
+	}
 }
 
 -(void)on_Recv:(char*)data length:(int)length{

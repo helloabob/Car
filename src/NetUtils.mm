@@ -62,9 +62,13 @@ void OnCalleeVideo(unsigned char *data, int len)
         return;
     }
     if (data[7]==0x0e) {
-        
+        if ([[NetUtils sharedInstance].videoDelegate respondsToSelector:@selector(onReceivedData:)]) {
+            [[NetUtils sharedInstance].videoDelegate onReceivedData:data length:len];
+        }
     } else if (data[7]==0x0f) {
-        
+        if ([[NetUtils sharedInstance].audioDelegate respondsToSelector:@selector(onReceivedData:)]) {
+            [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
+        }
     }
 }
 
@@ -237,6 +241,8 @@ void new_sa_handler(int){
         return 0x07;
     } else if (type == CommandTypeState) {
         return 0x08;
+    } else if (type == CommandTypeSpeech) {
+        return 0x09;
     } else {
         return 0x00;
     }

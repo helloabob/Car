@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @protocol NetUtilsDelegate <NSObject>
-- (void)onReceivedData:(NSData *)data;
+- (void)onReceivedData:(unsigned char*)data length:(int)length;
 @end
 
 typedef enum {
@@ -18,6 +18,7 @@ typedef enum {
     CommandTypeRedMode,
     CommandTypeRedSwitch,
     CommandTypeState,
+    CommandTypeSpeech,
 }CommandType;
 
 @interface NetUtils : NSObject

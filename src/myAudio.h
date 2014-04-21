@@ -22,9 +22,26 @@
 
 #import "NetUtils.h"
 
+#import <AudioToolbox/AudioQueue.h>
+#import <AudioToolbox/AudioFile.h>
+
+#define NUM_BUFFERS 3
+#define DOCUMENTS_FOLDER [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
+
+typedef struct
+{
+    AudioFileID                 audioFile;
+    AudioStreamBasicDescription dataFormat;
+    AudioQueueRef               queue;
+    AudioQueueBufferRef         buffers[NUM_BUFFERS];
+    UInt32                      bufferByteSize;
+    SInt64                      currentPacket;
+    BOOL                        recording;
+} RecordState;
+
 
 @interface myAudio : NSObject<NetUtilsDelegate> {
-	
+	RecordState recordState;
 	ALCcontext *mContext;
     ALCdevice *mDevice;
 	ALuint outSourceID;
@@ -51,6 +68,10 @@
 //@property (nonatomic,retain) AsyncSocket *socket;
 //@property (nonatomic,retain) DjSocket *mV;
 + (instancetype)sharedInstance;
+- (BOOL)	startRecording: (NSString *) filePath;
+- (void)	stopRecording;
+-(void)startPlay;
+-(void)stopPlay;
 
 -(void)initOpenAL;
 
@@ -58,7 +79,7 @@
 
 -(void)stopSound;
 
--(void)cleanUpOpenALID;
+//-(void)cleanUpOpenALID;
 
 -(void)cleanUpOpenAL;
 

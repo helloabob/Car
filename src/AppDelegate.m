@@ -31,9 +31,9 @@
 //		[alertView release];
 //	}
     
-    short a = -1;
-    unsigned short b = a;
-    NSLog(@"max:%d", b);
+    unsigned char a = 0x0a;
+    printf("%d", a-1);
+    
     
 //    unsigned char aa = 0x7E;
 //    printf("aa:%x and add:%2s", aa, &aa);
