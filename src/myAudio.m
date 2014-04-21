@@ -31,6 +31,13 @@ BOOL isPlay=YES;
 	[self stopSound];
 	isPlay=NO;
 }
++ (instancetype)sharedInstance {
+    static myAudio *sharedNetUtilsInstance = nil;
+    static dispatch_once_t predicate; dispatch_once(&predicate, ^{
+        sharedNetUtilsInstance = [[self alloc] init];
+    });
+    return sharedNetUtilsInstance;
+}
 
 void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
     
@@ -373,7 +380,7 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
     if (self = [super init]){
 //        socket = [[[[AsyncSocket alloc] initWithDelegate:self] autorelease]retain];
 //        NSLog(@"myaudio init: socket=%@",socket);
-		[self connect];
+//		[self connect];
 		
 		
         
@@ -381,9 +388,12 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 		pos2=0;
 		[self initOpenAL];
 		
-		
     }
     return self;
+}
+
+- (void)onReceivedData:(NSData *)data {
+    NSLog(@"recei_audio_data");
 }
 
 - (void)onSocket:(AsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port{

@@ -63,7 +63,13 @@ int timestamp;
     [sendData release];
 }
 
-
++ (instancetype)sharedInstance {
+    static DjSocket *sharedNetUtilsInstance = nil;
+    static dispatch_once_t predicate; dispatch_once(&predicate, ^{
+        sharedNetUtilsInstance = [[self alloc] init];
+    });
+    return sharedNetUtilsInstance;
+}
 
 
 -(void)decodeData:(char*)data length:(int)length
@@ -154,7 +160,9 @@ int timestamp;
     return timestamp;
 }
 
-
+- (void)onReceivedData:(NSData *)data {
+    NSLog(@"recei_video_data");
+}
 
 -(void)on_Recv:(char*)data length:(int)length{
 	static short requestLength=0;

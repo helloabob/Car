@@ -1,5 +1,6 @@
 ﻿#import "AsyncSocket.h"
 #import "spcaframe.h"
+#import "NetUtils.h"
 
 
 @class DjSocket;
@@ -13,7 +14,7 @@
 @class KKScrollView;
 
 
-@interface DjSocket : NSObject{
+@interface DjSocket : NSObject<NetUtilsDelegate>{
 //    AsyncSocket *socket;
 //	id<DjSocketDelegate> delegate;
 	NSMutableData *jpgData;
@@ -33,6 +34,7 @@
 //@property(nonatomic,assign)id<DjSocketDelegate> delegate;
 @property(nonatomic,assign)UIImage *image;
 
++ (instancetype)sharedInstance;
 
 @property (nonatomic, retain) KKScrollView *scrollView;
 

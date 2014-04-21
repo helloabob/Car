@@ -20,8 +20,10 @@
 #import "spcaframe.h"
 //#import "DjSocket.h"
 
+#import "NetUtils.h"
 
-@interface myAudio : NSObject {
+
+@interface myAudio : NSObject<NetUtilsDelegate> {
 	
 	ALCcontext *mContext;
     ALCdevice *mDevice;
@@ -48,6 +50,7 @@
 @property (nonatomic) ALCdevice *mDevice;
 //@property (nonatomic,retain) AsyncSocket *socket;
 //@property (nonatomic,retain) DjSocket *mV;
++ (instancetype)sharedInstance;
 
 -(void)initOpenAL;
 

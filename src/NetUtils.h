@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol NetUtilsDelegate <NSObject>
+- (void)onReceivedData:(NSData *)data;
+@end
+
 typedef enum {
     CommandTypeAudio,
     CommandTypeDirection,
@@ -18,6 +22,8 @@ typedef enum {
 
 @interface NetUtils : NSObject
 + (instancetype)sharedInstance;
+@property (nonatomic, assign) id<NetUtilsDelegate>videoDelegate;
+@property (nonatomic, assign) id<NetUtilsDelegate>audioDelegate;
 
 - (void)connectWithIP:(NSString *)ip
              withPort:(uint32_t)port

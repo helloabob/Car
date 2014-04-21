@@ -8,6 +8,8 @@
 
 #import "NetUtils.h"
 #import "CommonUtils.h"
+#import "DjSocket.h"
+#import "myAudio.h"
 
 #ifdef __cplusplus
 #import "f2fdefs.h"
@@ -53,7 +55,17 @@ int OnReady()
 void OnCalleeVideo(unsigned char *data, int len)
 {
 //	printf("[%s]UI received video data, len: %d, data: \"%s\"\n",__FUNCTION__, len, data);
-    
+    if (len < 9) {
+        return;
+    }
+    if (data[0] != 0x7E) {
+        return;
+    }
+    if (data[7]==0x0e) {
+        
+    } else if (data[7]==0x0f) {
+        
+    }
 }
 
 void OnCallerVideo(unsigned char *data, int len)
@@ -167,6 +179,10 @@ void new_sa_handler(int){
 
 - (void)initNetwork {
 //    _ip = [[NSString alloc] initWithString:[CommonUtils localIPAddress]];
+    
+    self.videoDelegate = [DjSocket sharedInstance];
+    self.audioDelegate = [myAudio sharedInstance];
+    
     _ip = [CommonUtils localIPAddress];
     _port = 10241;
     _pwd = @"888888";
