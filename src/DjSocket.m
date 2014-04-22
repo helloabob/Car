@@ -79,7 +79,8 @@ int timestamp;
 		
 		
 	//label.text=[NSString stringWithFormat:@"%d/%d",tvData->m_frag_cur+1,tvData->m_frag_totle];
-		
+    
+    
 	if(tvData->m_frag_totle-1==tvData->m_frag_cur)
 	{
 		image = [[UIImage alloc] initWithData:jpgData]; 
@@ -163,6 +164,11 @@ int timestamp;
 - (void)onReceivedData:(unsigned char*)data length:(int)length {
     NSLog(@"recei_video_data");
     int pos=0;
+    
+    if (scrollView.superview == nil) {
+        jpgData = 0;
+        return;
+    }
     
 	position = 0;
     //	while (YES) {

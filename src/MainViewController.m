@@ -126,7 +126,6 @@
 }
 
 - (void)stateChange:(NSNotification *)notfi {
-    NSLog(@"%d",[NSThread isMainThread]);
     NSString *state = notfi.object;
     if ([state isEqualToString:@"callReady"]) {
         dispatch_async(dispatch_get_main_queue(), ^(){[MBProgressHUD hideHUDForView:self.view animated:YES];});
