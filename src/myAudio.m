@@ -8,6 +8,8 @@
 
 #import "myAudio.h"
 
+#define DOCUMENTS_FOLDER [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
+#define FILEPATH [DOCUMENTS_FOLDER stringByAppendingPathComponent:[self dateString]]
 
 #define rate 8000
 
@@ -24,12 +26,21 @@ BOOL isPlay=YES;
 	return &buff;
 }
 
+- (NSString *) dateString
+{
+	NSDateFormatter *formatter = [[[NSDateFormatter alloc] init] autorelease];
+	formatter.dateFormat = @"ddMMYY_hhmmssa";
+	return [[formatter stringFromDate:[NSDate date]] stringByAppendingString:@".aif"];
+}
+
 -(void)startPlay{
 	isPlay=YES;
+    [self startRecording:FILEPATH];
 }
 -(void)stopPlay{
 	[self stopSound];
 	isPlay=NO;
+    [self stopRecording];
 }
 + (instancetype)sharedInstance {
     static myAudio *sharedNetUtilsInstance = nil;

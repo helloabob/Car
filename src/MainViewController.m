@@ -131,12 +131,22 @@
     if ([state isEqualToString:@"callReady"]) {
         dispatch_async(dispatch_get_main_queue(), ^(){[MBProgressHUD hideHUDForView:self.view animated:YES];});
     } else if ([state isEqualToString:@"onReady"]) {
-        dispatch_async(dispatch_get_main_queue(), ^(){[MBProgressHUD hideHUDForView:self.view animated:YES];[self.view bringSubviewToFront:viewSpeak];});
+        dispatch_async(dispatch_get_main_queue(), ^(){[MBProgressHUD hideHUDForView:self.view animated:YES];[self gotoPage2];});
     } else if ([state isEqualToString:@"onHangup"]) {
-        dispatch_async(dispatch_get_main_queue(), ^(){[MBProgressHUD hideHUDForView:self.view animated:YES];[self.view bringSubviewToFront:viewDial];});
+        dispatch_async(dispatch_get_main_queue(), ^(){[MBProgressHUD hideHUDForView:self.view animated:YES];[self returnPage1];});
     } else if ([state isEqualToString:@"sigpipe"]) {
-        dispatch_async(dispatch_get_main_queue(), ^(){[self.view bringSubviewToFront:viewDial];[self initNetwork];});
+        dispatch_async(dispatch_get_main_queue(), ^(){[self returnPage1];[self initNetwork];});
     }
+}
+- (void)gotoPage2{
+//    [self.view bringSubviewToFront:viewSpeak];
+    DemoViewController *vc = [[[DemoViewController alloc] init] autorelease];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)returnPage1{
+//    [self.view bringSubviewToFront:viewDial];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)call {

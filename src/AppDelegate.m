@@ -31,9 +31,6 @@
 //		[alertView release];
 //	}
     
-    unsigned char a = 0x0a;
-    printf("%d", a-1);
-    
     
 //    unsigned char aa = 0x7E;
 //    printf("aa:%x and add:%2s", aa, &aa);
@@ -49,7 +46,7 @@
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     self.window.backgroundColor = [UIColor whiteColor];
     
-    DemoViewController *demo = [[[DemoViewController alloc] init] autorelease];
+    MainViewController *demo = [[[MainViewController alloc] init] autorelease];
     UINavigationController *nav = [[[UINavigationController alloc] initWithRootViewController:demo] autorelease];
     nav.navigationBarHidden = YES;
     self.window.rootViewController = nav;

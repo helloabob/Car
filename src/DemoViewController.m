@@ -99,16 +99,17 @@ int deta=32;
 	[[UIAccelerometer sharedAccelerometer] setUpdateInterval:0.05];
     [[UIAccelerometer sharedAccelerometer] setDelegate:self];
 	
-	djSocket=[[DjSocket alloc]init];
+//	djSocket=[[DjSocket alloc]init];
 //	djSocket.delegate=self;
     
-    mA=[[myAudio alloc] init];
+//    mA=[[myAudio alloc] init];
+    mA = [myAudio sharedInstance];
     [mA startPlay];
 	
 	//[djSocket setAudioData:[mA getBuff]];
 	
 	//[djSocket prepareVideoSetting];
-    
+    djSocket = [DjSocket sharedInstance];
 	djSocket.label = [[UILabel alloc]initWithFrame:CGRectMake(0, 20, 300, 60)];
 	label=djSocket.label;
     label.text = @"test";
@@ -691,9 +692,10 @@ int deta=32;
 }
 
 -(void)dealloc{
-    [djSocket release];
+//    [djSocket release];
     
-	[mA release];
+//	[mA release];
+    [[UIAccelerometer sharedAccelerometer] setDelegate:nil];
     [super dealloc];
 }
 

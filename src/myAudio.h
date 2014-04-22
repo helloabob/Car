@@ -68,8 +68,6 @@ typedef struct
 //@property (nonatomic,retain) AsyncSocket *socket;
 //@property (nonatomic,retain) DjSocket *mV;
 + (instancetype)sharedInstance;
-- (BOOL)	startRecording: (NSString *) filePath;
-- (void)	stopRecording;
 -(void)startPlay;
 -(void)stopPlay;
 

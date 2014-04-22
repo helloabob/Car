@@ -47,7 +47,7 @@ typedef struct {
 int OnReady()
 {
 	printf("[%s]UI OnReady is called.\n",__FUNCTION__);
-//    bReadyToSendVideo = true;
+    bReadyToSendVideo = true;
     kPostNotif(@"stateChange", @"onReady");
     return 1;
 }
@@ -62,11 +62,17 @@ void OnCalleeVideo(unsigned char *data, int len)
         return;
     }
     if (data[7]==0x0e) {
-        if ([[NetUtils sharedInstance].videoDelegate respondsToSelector:@selector(onReceivedData:)]) {
+        if (bReadyToSendVideo==false) {
+            return;
+        }
+        if ([[NetUtils sharedInstance].videoDelegate respondsToSelector:@selector(onReceivedData:length:)]) {
             [[NetUtils sharedInstance].videoDelegate onReceivedData:data length:len];
         }
     } else if (data[7]==0x0f) {
-        if ([[NetUtils sharedInstance].audioDelegate respondsToSelector:@selector(onReceivedData:)]) {
+        if (bReadyToSendVideo==false) {
+            return;
+        }
+        if ([[NetUtils sharedInstance].audioDelegate respondsToSelector:@selector(onReceivedData:length:)]) {
             [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
         }
     }
@@ -172,8 +178,10 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
 
 void new_sa_handler(int){
     NSLog(@"--------catch_pipe_signal---------");
+    bReadyToSendVideo=false;
     f2fUnInit();
     free(cbfuncs__);
+    
     kPostNotif(@"stateChange", @"sigpipe");
 }
 
