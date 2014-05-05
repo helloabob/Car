@@ -434,9 +434,11 @@ static void HandleInputBuffer (void *aqData, AudioQueueRef inAQ, AudioQueueBuffe
     if (inNumPackets == 0 && pAqData->dataFormat.mBytesPerPacket != 0)
         inNumPackets = inBuffer->mAudioDataByteSize / pAqData->dataFormat.mBytesPerPacket;
     
+    [[NetUtils sharedInstance] startSendData:[NSData dataWithBytes:inBuffer->mAudioData length:inBuffer->mAudioDataByteSize] withType:CommandTypeAudio];
+    
     if (AudioFileWritePackets(pAqData->audioFile, NO, inBuffer->mAudioDataByteSize, inPacketDesc, pAqData->currentPacket, &inNumPackets, inBuffer->mAudioData) == noErr)
     {
-        [[NetUtils sharedInstance] startSendData:[NSData dataWithBytes:inBuffer->mAudioData length:inBuffer->mAudioDataByteSize] withType:CommandTypeAudio];
+        
         pAqData->currentPacket += inNumPackets;
         if (pAqData->recording == 0) return;
         AudioQueueEnqueueBuffer (pAqData->queue, inBuffer, 0, NULL);
@@ -466,7 +468,8 @@ void DeriveBufferSize (AudioQueueRef audioQueue, AudioStreamBasicDescription ASB
     AudioStreamBasicDescription *format = &recordState.dataFormat;
     format->mSampleRate = 8000.0;
     format->mFormatID = kAudioFormatLinearPCM;
-    format->mFormatFlags = kLinearPCMFormatFlagIsBigEndian |  kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+//    format->mFormatFlags = kLinearPCMFormatFlagIsBigEndian |  kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+    format->mFormatFlags = kAudioFormatFlagIsSignedInteger;
     //    format->mFormatFlags = kLinearPCMFormatFlagIsSignedInteger|kLinearPCMFormatFlagIsPacked;
     format->mChannelsPerFrame = 1; // mono
     format->mBitsPerChannel = 16;
@@ -483,9 +486,9 @@ void DeriveBufferSize (AudioQueueRef audioQueue, AudioStreamBasicDescription ASB
     if (status) {CFRelease(fileURL); printf("Could not establish new queue\n"); return NO;}
     
 	// create new audio file
-    status = AudioFileCreateWithURL(fileURL, kAudioFileAIFFType, &recordState.dataFormat, kAudioFileFlags_EraseFile, &recordState.audioFile);
-	CFRelease(fileURL); // thanks august joki
-    if (status) {printf("Could not create file to record audio\n"); return NO;}
+//    status = AudioFileCreateWithURL(fileURL, kAudioFileAIFFType, &recordState.dataFormat, kAudioFileFlags_EraseFile, &recordState.audioFile);
+//	CFRelease(fileURL); // thanks august joki
+//    if (status) {printf("Could not create file to record audio\n"); return NO;}
     
 	// figure out the buffer size
     DeriveBufferSize(recordState.queue, recordState.dataFormat, 0.5, &recordState.bufferByteSize);
