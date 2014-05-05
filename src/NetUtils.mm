@@ -7,9 +7,12 @@
 //
 
 #import "NetUtils.h"
-#import "CommonUtils.h"
 #import "DjSocket.h"
 #import "myAudio.h"
+
+#include <arpa/inet.h>
+#include <net/if.h>
+#include <ifaddrs.h>
 
 #ifdef __cplusplus
 #import "f2fdefs.h"
@@ -189,13 +192,43 @@ void new_sa_handler(int){
 //    free(cbfuncs);
 //}
 
+-(NSString *)localIPAddress
+{
+    NSString *localIP = nil;
+    struct ifaddrs *addrs;
+    if (getifaddrs(&addrs)==0) {
+        const struct ifaddrs *cursor = addrs;
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        while (cursor != NULL) {
+            if (cursor->ifa_addr->sa_family == AF_INET && (cursor->ifa_flags & IFF_LOOPBACK) == 0)
+            {
+                NSString *name = [NSString stringWithUTF8String:cursor->ifa_name];
+                //                if ([name isEqualToString:@"en0"]) // Wi-Fi adapter
+                //                {
+                [dict setObject:[NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)cursor->ifa_addr)->sin_addr)] forKey:name];
+                //                    localIP = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)cursor->ifa_addr)->sin_addr)];
+                //                    break;
+                //                }
+            }
+            cursor = cursor->ifa_next;
+        }
+        freeifaddrs(addrs);
+        if ([dict objectForKey:@"en0"]) {
+            localIP = [dict objectForKey:@"en0"];
+        } else if (dict.count > 0) {
+            localIP = [dict objectForKey:[dict allKeys].firstObject];
+        }
+    }
+    return localIP;
+}
+
 - (void)initNetwork {
 //    _ip = [[NSString alloc] initWithString:[CommonUtils localIPAddress]];
     
     self.videoDelegate = [DjSocket sharedInstance];
     self.audioDelegate = [myAudio sharedInstance];
     
-    _ip = [CommonUtils localIPAddress];
+    _ip = [self localIPAddress];
     _port = 10241;
     _pwd = @"888888";
 //    _pwd = [[NSString alloc] initWithString:@"888888"];

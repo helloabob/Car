@@ -83,7 +83,6 @@
 		507EEA7F15AF13D0000FA84E /* icon_r9_c30_s1.png in Resources */ = {isa = PBXBuildFile; fileRef = 507EEA4515AF13D0000FA84E /* icon_r9_c30_s1.png */; };
 		507EEA8015AF13D0000FA84E /* icon_r9_c33_s1.png in Resources */ = {isa = PBXBuildFile; fileRef = 507EEA4615AF13D0000FA84E /* icon_r9_c33_s1.png */; };
 		507EEA8115AF13D0000FA84E /* icon_r9_c5_s1.png in Resources */ = {isa = PBXBuildFile; fileRef = 507EEA4715AF13D0000FA84E /* icon_r9_c5_s1.png */; };
-		5A6170081900B05400B63B5B /* CommonUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A6170071900B05400B63B5B /* CommonUtils.m */; };
 		5A61701B1900F26600B63B5B /* cli_testsample_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5A6170111900F26600B63B5B /* cli_testsample_main.cpp */; };
 		5A61701C1900F26600B63B5B /* cli_testsample_public.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5A6170121900F26600B63B5B /* cli_testsample_public.cpp */; };
 		5A61701D1900F26600B63B5B /* protocol.cmd.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A6170141900F26600B63B5B /* protocol.cmd.txt */; };
@@ -188,8 +187,6 @@
 		507EEA4615AF13D0000FA84E /* icon_r9_c33_s1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_r9_c33_s1.png; sourceTree = "<group>"; };
 		507EEA4715AF13D0000FA84E /* icon_r9_c5_s1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_r9_c5_s1.png; sourceTree = "<group>"; };
 		507EEA4915AF13D0000FA84E /* spcaframe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spcaframe.h; sourceTree = "<group>"; };
-		5A6170061900B05400B63B5B /* CommonUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonUtils.h; sourceTree = "<group>"; };
-		5A6170071900B05400B63B5B /* CommonUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommonUtils.m; sourceTree = "<group>"; };
 		5A6170111900F26600B63B5B /* cli_testsample_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cli_testsample_main.cpp; sourceTree = "<group>"; };
 		5A6170121900F26600B63B5B /* cli_testsample_public.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cli_testsample_public.cpp; sourceTree = "<group>"; };
 		5A6170131900F26600B63B5B /* cli_testsample_public.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cli_testsample_public.h; sourceTree = "<group>"; };
@@ -298,8 +295,6 @@
 				5A61701A1900F26600B63B5B /* statemachinemirror.txt */,
 				2D640F0E1900147900838324 /* NetUtils.h */,
 				2D640F0F1900147900838324 /* NetUtils.mm */,
-				5A6170061900B05400B63B5B /* CommonUtils.h */,
-				5A6170071900B05400B63B5B /* CommonUtils.m */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -521,7 +516,6 @@
 				0489DC3115C66580001AED2F /* myAudio.m in Sources */,
 				D8BC4E9915DD296D00B012B6 /* KKScrollView.m in Sources */,
 				5A61701B1900F26600B63B5B /* cli_testsample_main.cpp in Sources */,
-				5A6170081900B05400B63B5B /* CommonUtils.m in Sources */,
 				D8BC4E9D15DD297800B012B6 /* TapDetectingImageView.mm in Sources */,
 				2D879C1819016ACF00368C8D /* MBProgressHUD.m in Sources */,
 			);

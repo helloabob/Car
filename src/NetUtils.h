@@ -25,7 +25,7 @@ typedef enum {
 + (instancetype)sharedInstance;
 @property (nonatomic, assign) id<NetUtilsDelegate>videoDelegate;
 @property (nonatomic, assign) id<NetUtilsDelegate>audioDelegate;
-
+-(NSString *)localIPAddress;
 - (void)connectWithIP:(NSString *)ip
              withPort:(uint32_t)port
               withPwd:(NSString *)pwd
