@@ -348,7 +348,7 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 		position = 0;
         unsigned short requestLength;
         [[NSData dataWithBytes:&data[1] length:2] getBytes:&requestLength length:2];
-        [self openAudioFromQueue:&data[8] dataSize:requestLength];
+        [self openAudioFromQueue:&data[8] dataSize:requestLength-6];
 //        
 //		while (position<sizeof(struct Tphead) && length-pos>0) {
 //			header[position]=data[pos];
@@ -434,15 +434,19 @@ static void HandleInputBuffer (void *aqData, AudioQueueRef inAQ, AudioQueueBuffe
     if (inNumPackets == 0 && pAqData->dataFormat.mBytesPerPacket != 0)
         inNumPackets = inBuffer->mAudioDataByteSize / pAqData->dataFormat.mBytesPerPacket;
     
-    [[NetUtils sharedInstance] startSendData:[NSData dataWithBytes:inBuffer->mAudioData length:inBuffer->mAudioDataByteSize] withType:CommandTypeAudio];
-    
-    if (AudioFileWritePackets(pAqData->audioFile, NO, inBuffer->mAudioDataByteSize, inPacketDesc, pAqData->currentPacket, &inNumPackets, inBuffer->mAudioData) == noErr)
-    {
-        
-        pAqData->currentPacket += inNumPackets;
-        if (pAqData->recording == 0) return;
-        AudioQueueEnqueueBuffer (pAqData->queue, inBuffer, 0, NULL);
+    if (pAqData->recording==NO) {
+        return;
     }
+    [[NetUtils sharedInstance] startSendData:[NSData dataWithBytes:inBuffer->mAudioData length:inBuffer->mAudioDataByteSize] withType:CommandTypeAudio];
+    AudioQueueEnqueueBuffer (pAqData->queue, inBuffer, 0, NULL);
+    
+//    if (AudioFileWritePackets(pAqData->audioFile, NO, inBuffer->mAudioDataByteSize, inPacketDesc, pAqData->currentPacket, &inNumPackets, inBuffer->mAudioData) == noErr)
+//    {
+//        
+//        pAqData->currentPacket += inNumPackets;
+//        if (pAqData->recording == 0) return;
+//        AudioQueueEnqueueBuffer (pAqData->queue, inBuffer, 0, NULL);
+//    }
 }
 
 void DeriveBufferSize (AudioQueueRef audioQueue, AudioStreamBasicDescription ASBDescription, Float64 seconds, UInt32 *outBufferSize)

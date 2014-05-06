@@ -64,6 +64,8 @@ void OnCalleeVideo(unsigned char *data, int len)
     if (data[0] != 0x7E) {
         return;
     }
+    NSData *dt = [NSData dataWithBytes:&data[7] length:1];
+    NSLog(@"======%@=======", dt);
     if (data[7]==0x0e) {
         if (bReadyToSendVideo==false) {
             return;
@@ -325,7 +327,7 @@ void new_sa_handler(int){
         for(int i=0,f=_mdata.length-1;i<f;i++){
             d[f]+=d[i];
         }
-        NSLog(@"sendData:%@", _mdata);
+//        NSLog(@"sendData:%@", _mdata);
         sendData((unsigned char *)_mdata.bytes, _mdata.length);
         bytesSent += bytesThisTime;
     }

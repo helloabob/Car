@@ -166,7 +166,7 @@ int timestamp;
     int pos=0;
     
     if (scrollView.superview == nil) {
-        jpgData = 0;
+        jpgData.length = 0;
         return;
     }
     
@@ -180,7 +180,7 @@ int timestamp;
     /**/
     char *tvData = (char *)&data[8];
     
-    [jpgData appendBytes:&tvData[3] length:requestLength-3];
+    [jpgData appendBytes:&tvData[3] length:requestLength-9];
     
 	if(tvData[1]-1==tvData[2])
 	{
@@ -323,10 +323,10 @@ int timestamp;
 	NSParameterAssert(writerInput);
 	NSParameterAssert([videoWriter canAddInput:writerInput]);
 	
-	if ([videoWriter canAddInput:writerInput])
-		NSLog(@" ");
-	else
-		NSLog(@" ");
+//	if ([videoWriter canAddInput:writerInput])
+//		NSLog(@" ");
+//	else
+//		NSLog(@" ");
 	
 	[videoWriter addInput:writerInput];
     /*
@@ -416,8 +416,9 @@ int timestamp;
 			if (buffer)
 			{
 				
-				if(![adaptor appendPixelBuffer:buffer withPresentationTime:lastTime])
-					NSLog(@"FAIL");
+				if(![adaptor appendPixelBuffer:buffer withPresentationTime:lastTime]){
+                    NSLog(@"FAIL");
+                }
 				else
 					CFRelease(buffer);
 			}

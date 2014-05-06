@@ -44,6 +44,12 @@ int *intArr[]={
 	CAR_REC_END
 };
 
+BOOL buttonRunLoop=YES;
+BOOL leftTopButtonDown=NO;
+BOOL leftBottomButtonDown=NO;
+BOOL rightTopButtonDown=NO;
+BOOL rightBottomButtonDown=NO;
+
 //int curTag=0;
 //float accelX=0.0f,accelY=0.0f,accelZ=0.0f;
 long starttime;
@@ -92,6 +98,10 @@ int deta=32;
 	//[btn release];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    buttonRunLoop = NO;
+}
 
 - (void)viewDidLoad
 {
@@ -196,7 +206,33 @@ int deta=32;
         [djSocket.scrollView addScale];
     }
     
+    [self performSelectorInBackground:@selector(buttonRunLoopHandler) withObject:nil];
+    
+    
 }
+
+- (void)buttonRunLoopHandler {
+    while (buttonRunLoop) {
+        @autoreleasepool {
+            usleep(50000);
+            int buttonData = 0;
+            if (leftTopButtonDown) {
+                buttonData+=8;
+            }
+            if (leftBottomButtonDown) {
+                buttonData+=16;
+            }
+            if (rightTopButtonDown) {
+                buttonData+=32;
+            }
+            if (rightBottomButtonDown) {
+                buttonData+=64;
+            }
+            [[NetUtils sharedInstance] startSendData:buttonData withType:CommandTypeDirection forLength:1];
+        }
+    }
+}
+
 - (void)viewWillAppear:(BOOL)animated{
     //if([[self.view viewWithTag:12] isHidden]){
         
@@ -645,21 +681,19 @@ int deta=32;
 		
         //int tagplus=curTag+tag;
 		if(tag==7){
-			
+			rightTopButtonDown=YES;
 			[djSocket test:5];
-            [[NetUtils sharedInstance] startSendData:32 withType:CommandTypeDirection forLength:1];
 		}else if(tag==5){
+            rightBottomButtonDown=YES;
 			[djSocket test:7];
-            [[NetUtils sharedInstance] startSendData:64 withType:CommandTypeDirection forLength:1];
 			//curTag=0;
 		}else if(tag==8){
+            leftTopButtonDown=YES;
 			[djSocket test:1];
-            [[NetUtils sharedInstance] startSendData:8 withType:CommandTypeDirection forLength:1];
 			//curTag=0;
 		}else{
-			
+			leftBottomButtonDown=YES;
 			[djSocket test:3];
-            [[NetUtils sharedInstance] startSendData:16 withType:CommandTypeDirection forLength:1];
 		}
 	}
 	
@@ -671,16 +705,18 @@ int deta=32;
 		
         //int tagplus=curTag+tag;
 		if(tag==7){
-			
+			rightTopButtonDown=NO;
 			[djSocket test:6];
 		}else if(tag==5){
+            rightBottomButtonDown=NO;
 			[djSocket test:8];
 			//curTag=0;
 		}else if(tag==8){
+            leftTopButtonDown=NO;
 			[djSocket test:2];
 			//curTag=0;
 		}else{
-			
+			leftBottomButtonDown=NO;
 			[djSocket test:4];
 		}
 	}
@@ -696,6 +732,7 @@ int deta=32;
     
 //	[mA release];
     [[UIAccelerometer sharedAccelerometer] setDelegate:nil];
+    
     [super dealloc];
 }
 

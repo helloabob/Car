@@ -6,3 +6,7 @@
 #define kAddObserver(a,b) [[NSNotificationCenter defaultCenter] addObserver:self selector:a name:b object:nil];
 
 #define kPostNotif(a,b) [[NSNotificationCenter defaultCenter] postNotificationName:a object:b userInfo:nil];
+
+#if 0
+#define NSLog(...) {}
+#endif

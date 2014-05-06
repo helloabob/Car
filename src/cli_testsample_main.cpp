@@ -897,7 +897,7 @@ void* recv_thread(void* ctx)
         //------------------------------------------------
         
         recv_data[bytes_read] = '\0';
-printf("receive data=%s\n",recv_data);
+//printf("receive data=%s\n",recv_data);
         onDataRead(recv_data, bytes_read, &saddr);
     }
     BDEBUG(LV_CRITICAL, "Thread 'recv_thread' exit.");
