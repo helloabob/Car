@@ -14,7 +14,9 @@ const float minScale = 1.0f;
 const float scaleValue = 0.4f;
 const float defaultScale = 1.0f; // 默认原始图大小
 
-@implementation KKScrollView
+@implementation KKScrollView{
+    BOOL done;
+}
 @synthesize scale;
 
 - (id)initWithFrame:(CGRect)frame {
@@ -125,9 +127,14 @@ const float defaultScale = 1.0f; // 默认原始图大小
     
 }
 - (BOOL)addScale{
+    return NO;
+    if (done) {
+        return NO;
+    }
     BOOL flag = TRUE;
     if([self canAddScale])flag = FALSE;
     [self setScale:scaleValue];
+    done=YES;
     return flag;
 
 }

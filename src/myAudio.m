@@ -13,7 +13,9 @@
 
 #define rate 8000
 
-@implementation myAudio
+@implementation myAudio{
+    dispatch_queue_t serial_queue;
+}
 
 @synthesize mContext;
 @synthesize mDevice;
@@ -46,6 +48,8 @@ BOOL isPlay=YES;
     static myAudio *sharedNetUtilsInstance = nil;
     static dispatch_once_t predicate; dispatch_once(&predicate, ^{
         sharedNetUtilsInstance = [[self alloc] init];
+        sharedNetUtilsInstance->serial_queue = dispatch_queue_create("serial_audio", DISPATCH_QUEUE_SERIAL);
+
     });
     return sharedNetUtilsInstance;
 }
@@ -210,20 +214,20 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 	alGetSourcei(outSourceID, AL_BUFFERS_QUEUED, &queued);
 	
 	
-	NSLog(@"Processed = %d\n", processed);
+//	NSLog(@"Processed = %d\n", processed);
 	
-	NSLog(@"Queued = %d\n", queued);
+//	NSLog(@"Queued = %d\n", queued);
 	
 	
     while(processed--)
 		
     {
 		
-        ALuint buff;
+        ALuint buffD;
 		
-        alSourceUnqueueBuffers(outSourceID, 1, &buff);
+        alSourceUnqueueBuffers(outSourceID, 1, &buffD);
 		
-		alDeleteBuffers(1, &buff);
+		alDeleteBuffers(1, &buffD);
 		
 	}
 	
@@ -238,10 +242,17 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 
 -(void)stopSound{
 	alSourceStop(outSourceID);
-	
 }
 
 -(void)cleanUpOpenAL{
+    NSLog(@"cleanUpOpenAL");
+    ALint queue_num;
+    alGetSourcei(&outSourceID, AL_BUFFERS_QUEUED, &queue_num);
+    while (queue_num--) {
+        ALuint processedBuffer;
+        alSourceUnqueueBuffers(&outSourceID, 1, &processedBuffer);
+        alDeleteBuffers(1, &processedBuffer);
+    }
 	alDeleteSources(1, &outSourceID);
 	alcDestroyContext(mContext);
 	alcCloseDevice(mDevice);
@@ -249,18 +260,11 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 - (void)clearBuffer{
     int processed;
     alGetSourcei(outSourceID, AL_BUFFERS_PROCESSED, &processed);
-    
-    
     while(processed--)
-        
     {
-        
-        ALuint buff;
-        
-        alSourceUnqueueBuffers(outSourceID, 1, &buff);
-        
-        alDeleteBuffers(1, &buff);
-        
+        ALuint buffD;
+        alSourceUnqueueBuffers(outSourceID, 1, &buffD);
+        alDeleteBuffers(1, &buffD);
     }
 }
 /*
@@ -327,6 +331,7 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 */
 
 - (void)onReceivedData:(unsigned char*)data length:(int)length {
+//    dispatch_async(serial_queue, ^(){
     NSLog(@"recei_audio_data");
 //    static short requestLength=0;
 	int pos=0;
@@ -377,6 +382,7 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 //		else
 //			return;
 //	}
+//    });
 }
 -(void)on_Recv:(char*)data length:(int)length{
 	static short requestLength=0;
@@ -437,8 +443,15 @@ static void HandleInputBuffer (void *aqData, AudioQueueRef inAQ, AudioQueueBuffe
     if (pAqData->recording==NO) {
         return;
     }
+    static int count=0;
+    count++;
+    if (count==50) {
+        NSLog(@"send_audio_data");
+        count=0;
+    }
+    
     [[NetUtils sharedInstance] startSendData:[NSData dataWithBytes:inBuffer->mAudioData length:inBuffer->mAudioDataByteSize] withType:CommandTypeAudio];
-    AudioQueueEnqueueBuffer (pAqData->queue, inBuffer, 0, NULL);
+    AudioQueueEnqueueBuffer(pAqData->queue, inBuffer, 0, NULL);
     
 //    if (AudioFileWritePackets(pAqData->audioFile, NO, inBuffer->mAudioDataByteSize, inPacketDesc, pAqData->currentPacket, &inNumPackets, inBuffer->mAudioData) == noErr)
 //    {
@@ -463,11 +476,20 @@ void DeriveBufferSize (AudioQueueRef audioQueue, AudioStreamBasicDescription ASB
     *outBufferSize =  (UInt32)((numBytesForTime < maxBufferSize) ? numBytesForTime : maxBufferSize);
 }
 
-- (BOOL) startRecording: (NSString *) filePath
+- (BOOL)startRecording: (NSString *) filePath
 {
 	// file url
+    
     AVAudioSession * audioSession = [AVAudioSession sharedInstance];
+//    [audioSession setCategory:AVAudioSessionCategoryPlayback error: nil];
     [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error: nil];
+
+    
+    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,
+                             sizeof (audioRouteOverride),
+                             &audioRouteOverride);
+    
     [audioSession setActive:YES error: nil];
     AudioStreamBasicDescription *format = &recordState.dataFormat;
     format->mSampleRate = 8000.0;
@@ -520,12 +542,12 @@ void DeriveBufferSize (AudioQueueRef audioQueue, AudioStreamBasicDescription ASB
     return YES;
 }
 
-- (void) stopRecording
+- (void)stopRecording
 {
-    [self performSelector:@selector(reallyStopRecording) withObject:NULL afterDelay:1.0f];
+    [self performSelector:@selector(reallyStopRecording) withObject:NULL afterDelay:0.5f];
 }
 
-- (void) reallyStopRecording
+- (void)reallyStopRecording
 {
     AudioQueueFlush(recordState.queue);
     AudioQueueStop(recordState.queue, NO);
@@ -535,7 +557,7 @@ void DeriveBufferSize (AudioQueueRef audioQueue, AudioStreamBasicDescription ASB
 		AudioQueueFreeBuffer(recordState.queue, recordState.buffers[i]);
     
     AudioQueueDispose(recordState.queue, YES);
-    AudioFileClose(recordState.audioFile);
+//    AudioFileClose(recordState.audioFile);
 }
 
 #pragma mark socket
@@ -587,7 +609,7 @@ void DeriveBufferSize (AudioQueueRef audioQueue, AudioStreamBasicDescription ASB
 
 -(void)dealloc{
 	//[self stopSound];
-	
+	[self stopPlay];
 	[self cleanUpOpenAL];
 //    NSLog(@"myAudio dealloc release开始:socket:%@",socket);
 //    [socket release];

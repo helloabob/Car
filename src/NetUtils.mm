@@ -23,7 +23,7 @@ static BOOL _firstCall;
 static BOOL bReadyToSendVideo=false;
 static BOOL bCallReady=false;
 
-F2FCBFUNCTIONS *cbfuncs__;
+F2FCBFUNCTIONS *cbfuncs__=NULL;
 
 #define kMaxBytes 539
 
@@ -64,8 +64,6 @@ void OnCalleeVideo(unsigned char *data, int len)
     if (data[0] != 0x7E) {
         return;
     }
-    NSData *dt = [NSData dataWithBytes:&data[7] length:1];
-    NSLog(@"======%@=======", dt);
     if (data[7]==0x0e) {
         if (bReadyToSendVideo==false) {
             return;
@@ -174,21 +172,33 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
     static dispatch_once_t predicate; dispatch_once(&predicate, ^{
         sharedNetUtilsInstance = [[self alloc] init];
 //        signal(SIGPIPE,SIG_IGN);
-        struct sigaction sa;
-        sa.sa_handler = new_sa_handler;
-        sigaction(SIGPIPE, &sa, 0);
+//        struct sigaction sa;
+//        sa.sa_handler = new_sa_handler;
+//        sigaction(SIGPIPE, &sa, 0);
     });
     return sharedNetUtilsInstance;
 }
 
-void new_sa_handler(int){
-    NSLog(@"--------catch_pipe_signal---------");
+- (void)abortNetwork {
     bReadyToSendVideo=false;
-    f2fUnInit();
-    free(cbfuncs__);
-    
-    kPostNotif(@"stateChange", @"sigpipe");
+    if (cbfuncs__!=NULL) {
+        f2fUnInit();
+        free(cbfuncs__);
+        cbfuncs__=NULL;
+        NSLog(@"deactive");
+    }
 }
+
+//void new_sa_handler(int){
+//    NSLog(@"--------catch_pipe_signal---------");
+//    bReadyToSendVideo=false;
+//    if (cbfuncs__!=NULL) {
+//        f2fUnInit();
+//        free(cbfuncs__);
+//        cbfuncs__ = NULL;
+//    }
+//    kPostNotif(@"stateChange", @"sigpipe");
+//}
 
 //- (void)dispose {
 //    free(cbfuncs);

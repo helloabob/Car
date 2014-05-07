@@ -32,6 +32,7 @@ typedef enum {
          withCallerId:(NSString *)callerId
          withCalleeId:(NSString *)cid;
 - (void)initNetwork;
+- (void)abortNetwork;
 - (int)startCall:(NSString *)cid;
 - (void)startSendData:(NSData *)data withType:(CommandType)type;
 - (void)startSendData:(int)cmd withType:(CommandType)type forLength:(int)length;

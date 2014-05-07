@@ -205,7 +205,7 @@ int deta=32;
     if(flag2){
         [djSocket.scrollView addScale];
     }
-    
+    buttonRunLoop = YES;
     [self performSelectorInBackground:@selector(buttonRunLoopHandler) withObject:nil];
     
     
@@ -227,6 +227,12 @@ int deta=32;
             }
             if (rightBottomButtonDown) {
                 buttonData+=64;
+            }
+            static int count = 0;
+            count++;
+            if (count==100) {
+                NSLog(@"send_control_data");
+                count=0;
             }
             [[NetUtils sharedInstance] startSendData:buttonData withType:CommandTypeDirection forLength:1];
         }

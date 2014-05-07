@@ -9,7 +9,9 @@
 //#import "faac.h"
 #import "KKScrollView.h"
 
-@implementation DjSocket
+@implementation DjSocket {
+    dispatch_queue_t serial_queue;
+}
 @synthesize imgView;
 @synthesize label;
 //@synthesize delegate;
@@ -67,6 +69,7 @@ int timestamp;
     static DjSocket *sharedNetUtilsInstance = nil;
     static dispatch_once_t predicate; dispatch_once(&predicate, ^{
         sharedNetUtilsInstance = [[self alloc] init];
+        sharedNetUtilsInstance->serial_queue = dispatch_queue_create("serial_dj", DISPATCH_QUEUE_SERIAL);
     });
     return sharedNetUtilsInstance;
 }
@@ -162,38 +165,41 @@ int timestamp;
 }
 
 - (void)onReceivedData:(unsigned char*)data length:(int)length {
-    NSLog(@"recei_video_data");
-    int pos=0;
-    
-    if (scrollView.superview == nil) {
-        jpgData.length = 0;
-        return;
-    }
-    
-	position = 0;
-    //	while (YES) {
-    //∂¡header
-    if(data[pos] != 0x7e)	return;
-    position = 0;
-    unsigned short requestLength;
-    [[NSData dataWithBytes:&data[1] length:2] getBytes:&requestLength length:2];
-    /**/
-    char *tvData = (char *)&data[8];
-    
-    [jpgData appendBytes:&tvData[3] length:requestLength-9];
-    
-	if(tvData[1]-1==tvData[2])
-	{
-		image = [[UIImage alloc] initWithData:jpgData];
-		//if (isCamera){
-		//	sleep(1);
-		//	[self saveScreen];
-		//}
-		[self performSelectorOnMainThread:@selector(aa) withObject:nil waitUntilDone:!NO];
-		
-		
-		jpgData.length=0;
-	}
+//    dispatch_async(serial_queue, ^(){
+        NSLog(@"recei_video_data");
+        int pos=0;
+        
+        if (scrollView.superview == nil) {
+            jpgData.length = 0;
+            return;
+        }
+        
+        position = 0;
+        //	while (YES) {
+        //∂¡header
+        if(data[pos] != 0x7e)	return;
+        position = 0;
+        unsigned short requestLength;
+        [[NSData dataWithBytes:&data[1] length:2] getBytes:&requestLength length:2];
+        /**/
+        char *tvData = (char *)&data[8];
+        
+        [jpgData appendBytes:&tvData[3] length:requestLength-9];
+        NSLog(@"cur_role:%u and total:%u", tvData[2], tvData[1]);
+        if(tvData[1]-1==tvData[2])
+        {
+            image = [[UIImage alloc] initWithData:jpgData];
+            //if (isCamera){
+            //	sleep(1);
+            //	[self saveScreen];
+            //}
+            NSLog(@"put image");
+            [self performSelectorOnMainThread:@selector(aa) withObject:nil waitUntilDone:!NO];
+            NSLog(@"did put image");
+            
+            jpgData.length=0;
+        }
+//    });
 }
 
 -(void)on_Recv:(char*)data length:(int)length{

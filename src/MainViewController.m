@@ -14,12 +14,20 @@
 
 #define WAVE_UPDATE_FREQUENCY   0.05
 
+typedef enum ActionState{
+    ActionStateIniting,
+    ActionStateInited,
+    ActionStateCalling,
+    ActionStateCalled,
+}ActionState;
 
 @interface MainViewController ()<AVAudioRecorderDelegate> {
     UITextField *txtCalleeId;
     UIView *viewDial;
     UIView *viewSpeak;
     NSTimer * timer_;
+    BOOL shouldInitNetwork;
+    ActionState actionState_;
 }
 
 @property(nonatomic,retain) AVAudioRecorder * recorder;
@@ -91,15 +99,21 @@
     [viewSpeak addSubview:btn];
     
     
-    
+    kAddObserver(@selector(didEnterBackground), UIApplicationDidEnterBackgroundNotification);
+    kAddObserver(@selector(didBecomeActive), UIApplicationDidBecomeActiveNotification);
     kAddObserver(@selector(stateChange:), @"stateChange");
+    shouldInitNetwork=YES;
     [self initNetwork];
 }
 
 - (void)initNetwork {
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.labelText = @"网络初始化...";
-    [[NetUtils sharedInstance] initNetwork];
+    if (shouldInitNetwork==YES) {
+        shouldInitNetwork=NO;
+        actionState_=ActionStateIniting;
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.labelText = @"网络初始化...";
+        [[NetUtils sharedInstance] initNetwork];
+    }
 }
 
 - (void)startRecord {
@@ -125,14 +139,35 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
+- (void)didBecomeActive {
+    if (shouldInitNetwork==YES) {
+        [self initNetwork];
+    }
+}
+
+- (void)didEnterBackground {
+    if (shouldInitNetwork==NO) {
+        shouldInitNetwork=YES;
+        [[NetUtils sharedInstance] abortNetwork];
+        [[myAudio sharedInstance] stopPlay];
+        [self returnPage1];
+    }
+    
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    NSLog(@"viewDidAppear");
+}
+
 - (void)stateChange:(NSNotification *)notfi {
     NSString *state = notfi.object;
     if ([state isEqualToString:@"callReady"]) {
-        dispatch_async(dispatch_get_main_queue(), ^(){[MBProgressHUD hideHUDForView:self.view animated:YES];});
+        dispatch_async(dispatch_get_main_queue(), ^(){actionState_=ActionStateInited;[MBProgressHUD hideHUDForView:self.view animated:YES];});
     } else if ([state isEqualToString:@"onReady"]) {
-        dispatch_async(dispatch_get_main_queue(), ^(){[MBProgressHUD hideHUDForView:self.view animated:YES];[self gotoPage2];});
+        dispatch_async(dispatch_get_main_queue(), ^(){actionState_=ActionStateCalled;[MBProgressHUD hideHUDForView:self.view animated:YES];[self gotoPage2];});
     } else if ([state isEqualToString:@"onHangup"]) {
-        dispatch_async(dispatch_get_main_queue(), ^(){[MBProgressHUD hideHUDForView:self.view animated:YES];[self returnPage1];});
+        dispatch_async(dispatch_get_main_queue(), ^(){if(actionState_==ActionStateCalling){[MBProgressHUD hideHUDForView:self.view animated:YES];}if(actionState_==ActionStateCalled){[self returnPage1];}});
     } else if ([state isEqualToString:@"sigpipe"]) {
         dispatch_async(dispatch_get_main_queue(), ^(){[self returnPage1];[self initNetwork];});
     }
@@ -145,12 +180,15 @@
 
 - (void)returnPage1{
 //    [self.view bringSubviewToFront:viewDial];
-    [self.navigationController popViewControllerAnimated:YES];
+    if (self.navigationController.visibleViewController!=self) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+    }
 }
 
 - (void)call {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"寻址中...";
+    actionState_=ActionStateCalling;
     int result = [[NetUtils sharedInstance] startCall:txtCalleeId.text];
     NSLog(@"call_result:%d", result);
 }

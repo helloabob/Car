@@ -3500,6 +3500,10 @@ void onCalleeMedia(F2FPKG*recv_data)
     /** am i the caller?  */
     // if state_machine_call!=SMCALL_IDLE, and the callerid and calleeid are equal to those in recv_data, it
     //  means i'm the caller.
+    //bob
+    if (test_calleeid==NULL) {
+        return;
+    }
     if ((SMCALL_IDLE != state_machine_call) && (0==strcmp(sourceid, test_calleeid)) && (0==strcmp(destid, terminal_id)) ){
         bIsCaller = true;
     }
