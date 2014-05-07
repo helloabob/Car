@@ -185,7 +185,6 @@ int timestamp;
         char *tvData = (char *)&data[8];
         
         [jpgData appendBytes:&tvData[3] length:requestLength-9];
-        NSLog(@"cur_role:%u and total:%u", tvData[2], tvData[1]);
         if(tvData[1]-1==tvData[2])
         {
             image = [[UIImage alloc] initWithData:jpgData];
@@ -193,9 +192,7 @@ int timestamp;
             //	sleep(1);
             //	[self saveScreen];
             //}
-            NSLog(@"put image");
             [self performSelectorOnMainThread:@selector(aa) withObject:nil waitUntilDone:!NO];
-            NSLog(@"did put image");
             
             jpgData.length=0;
         }

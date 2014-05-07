@@ -149,7 +149,6 @@ typedef enum ActionState{
     if (shouldInitNetwork==NO) {
         shouldInitNetwork=YES;
         [[NetUtils sharedInstance] abortNetwork];
-        [[myAudio sharedInstance] stopPlay];
         [self returnPage1];
     }
     
@@ -181,6 +180,7 @@ typedef enum ActionState{
 - (void)returnPage1{
 //    [self.view bringSubviewToFront:viewDial];
     if (self.navigationController.visibleViewController!=self) {
+        [[myAudio sharedInstance] stopPlay];
         [self.navigationController popToRootViewControllerAnimated:NO];
     }
 }

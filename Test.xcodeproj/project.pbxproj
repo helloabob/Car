@@ -29,6 +29,7 @@
 		2D879C1819016ACF00368C8D /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D879C1719016ACF00368C8D /* MBProgressHUD.m */; };
 		2D879C1B1901761900368C8D /* record_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D879C191901761900368C8D /* record_down.png */; };
 		2D879C1C1901761900368C8D /* record_up.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D879C1A1901761900368C8D /* record_up.png */; };
+		2D91B68F191A672D00651AB1 /* libf2fnet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D91B68E191A672D00651AB1 /* libf2fnet.a */; };
 		500623A3157CAEB7008C2B07 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 500623A2157CAEB7008C2B07 /* CFNetwork.framework */; };
 		500623A5157CAECE008C2B07 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 500623A4157CAECE008C2B07 /* SenTestingKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		5008758915A74E0800A52053 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 5008758815A74E0800A52053 /* icon.png */; };
@@ -83,8 +84,6 @@
 		507EEA7F15AF13D0000FA84E /* icon_r9_c30_s1.png in Resources */ = {isa = PBXBuildFile; fileRef = 507EEA4515AF13D0000FA84E /* icon_r9_c30_s1.png */; };
 		507EEA8015AF13D0000FA84E /* icon_r9_c33_s1.png in Resources */ = {isa = PBXBuildFile; fileRef = 507EEA4615AF13D0000FA84E /* icon_r9_c33_s1.png */; };
 		507EEA8115AF13D0000FA84E /* icon_r9_c5_s1.png in Resources */ = {isa = PBXBuildFile; fileRef = 507EEA4715AF13D0000FA84E /* icon_r9_c5_s1.png */; };
-		5A61701B1900F26600B63B5B /* cli_testsample_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5A6170111900F26600B63B5B /* cli_testsample_main.cpp */; };
-		5A61701C1900F26600B63B5B /* cli_testsample_public.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5A6170121900F26600B63B5B /* cli_testsample_public.cpp */; };
 		5A61701D1900F26600B63B5B /* protocol.cmd.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A6170141900F26600B63B5B /* protocol.cmd.txt */; };
 		5A61701E1900F26600B63B5B /* protocol.key.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A6170151900F26600B63B5B /* protocol.key.txt */; };
 		5A61701F1900F26600B63B5B /* statemachine.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A6170161900F26600B63B5B /* statemachine.txt */; };
@@ -126,6 +125,7 @@
 		2D879C1719016ACF00368C8D /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		2D879C191901761900368C8D /* record_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record_down.png; sourceTree = "<group>"; };
 		2D879C1A1901761900368C8D /* record_up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record_up.png; sourceTree = "<group>"; };
+		2D91B68E191A672D00651AB1 /* libf2fnet.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libf2fnet.a; sourceTree = "<group>"; };
 		500623A2157CAEB7008C2B07 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		500623A4157CAECE008C2B07 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		500623B6157CB163008C2B07 /* Test_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Test_Prefix.pch; sourceTree = "<group>"; };
@@ -187,9 +187,6 @@
 		507EEA4615AF13D0000FA84E /* icon_r9_c33_s1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_r9_c33_s1.png; sourceTree = "<group>"; };
 		507EEA4715AF13D0000FA84E /* icon_r9_c5_s1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_r9_c5_s1.png; sourceTree = "<group>"; };
 		507EEA4915AF13D0000FA84E /* spcaframe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spcaframe.h; sourceTree = "<group>"; };
-		5A6170111900F26600B63B5B /* cli_testsample_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cli_testsample_main.cpp; sourceTree = "<group>"; };
-		5A6170121900F26600B63B5B /* cli_testsample_public.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cli_testsample_public.cpp; sourceTree = "<group>"; };
-		5A6170131900F26600B63B5B /* cli_testsample_public.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cli_testsample_public.h; sourceTree = "<group>"; };
 		5A6170141900F26600B63B5B /* protocol.cmd.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = protocol.cmd.txt; sourceTree = "<group>"; };
 		5A6170151900F26600B63B5B /* protocol.key.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = protocol.key.txt; sourceTree = "<group>"; };
 		5A6170161900F26600B63B5B /* statemachine.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = statemachine.txt; sourceTree = "<group>"; };
@@ -222,6 +219,7 @@
 				048D2AF415BE81EE005107BD /* AVFoundation.framework in Frameworks */,
 				0496AA0615C262CA00526976 /* AssetsLibrary.framework in Frameworks */,
 				0496AB9C15C2821800526976 /* AudioToolbox.framework in Frameworks */,
+				2D91B68F191A672D00651AB1 /* libf2fnet.a in Frameworks */,
 				0489DC4615C6661D001AED2F /* OpenAL.framework in Frameworks */,
 				048B53ED15CBB26200147A8C /* SystemConfiguration.framework in Frameworks */,
 				047EDFEA15D0ADBE003A8C43 /* libfaac.dylib in Frameworks */,
@@ -264,6 +262,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2D91B68E191A672D00651AB1 /* libf2fnet.a */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				288765A40DF7441C002DB57D /* CoreGraphics.framework */,
@@ -283,9 +282,6 @@
 			isa = PBXGroup;
 			children = (
 				5A6170241900F26F00B63B5B /* f2fdefs.h */,
-				5A6170111900F26600B63B5B /* cli_testsample_main.cpp */,
-				5A6170121900F26600B63B5B /* cli_testsample_public.cpp */,
-				5A6170131900F26600B63B5B /* cli_testsample_public.h */,
 				5A6170141900F26600B63B5B /* protocol.cmd.txt */,
 				5A6170151900F26600B63B5B /* protocol.key.txt */,
 				5A6170161900F26600B63B5B /* statemachine.txt */,
@@ -506,7 +502,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				507EEA4A15AF13D0000FA84E /* AppDelegate.m in Sources */,
-				5A61701C1900F26600B63B5B /* cli_testsample_public.cpp in Sources */,
 				2D640F101900147900838324 /* NetUtils.mm in Sources */,
 				507EEA4C15AF13D0000FA84E /* AsyncSocket.m in Sources */,
 				2D879C15190164FF00368C8D /* MainViewController.m in Sources */,
@@ -515,7 +510,6 @@
 				507EEA5215AF13D0000FA84E /* main.m in Sources */,
 				0489DC3115C66580001AED2F /* myAudio.m in Sources */,
 				D8BC4E9915DD296D00B012B6 /* KKScrollView.m in Sources */,
-				5A61701B1900F26600B63B5B /* cli_testsample_main.cpp in Sources */,
 				D8BC4E9D15DD297800B012B6 /* TapDetectingImageView.mm in Sources */,
 				2D879C1819016ACF00368C8D /* MBProgressHUD.m in Sources */,
 			);
