@@ -331,13 +331,7 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 */
 
 - (void)onReceivedData:(unsigned char*)data length:(int)length {
-//    dispatch_async(serial_queue, ^(){
-    NSLog(@"recei_audio_data");
-//    static short requestLength=0;
-	int pos=0;
-    
-	position = 0;
-	if (isPlay == 0)
+    if (isPlay == 0)
 	{
         [self clearBuffer];
 		return;
@@ -347,13 +341,30 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
         [self clearBuffer];
 		return;
 	}
+//    unsigned char *new_data=data;
+    unsigned char *new_data=malloc(length);
+    memcpy(new_data, data, length);
+    dispatch_async(serial_queue, ^(){
+        if (isPlay == 0)
+        {
+            [self clearBuffer];
+            free(new_data);
+            return;
+        }
+//    NSLog(@"recei_audio_data");
+//    static short requestLength=0;
+//	int pos=0;
+    
+	position = 0;
+	
 //	while (YES) {
 		//∂¡header
-		if(data[pos] != 0x7e)	return;
+//		if(new_data[pos] != 0x7e)	return;
 		position = 0;
         unsigned short requestLength;
-        [[NSData dataWithBytes:&data[1] length:2] getBytes:&requestLength length:2];
-        [self openAudioFromQueue:&data[8] dataSize:requestLength-6];
+        [[NSData dataWithBytes:&new_data[1] length:2] getBytes:&requestLength length:2];
+//    NSLog(@"total_len:%d    req_len:%d", length, requestLength);
+        [self openAudioFromQueue:&new_data[8] dataSize:requestLength-6];
 //        
 //		while (position<sizeof(struct Tphead) && length-pos>0) {
 //			header[position]=data[pos];
@@ -382,7 +393,8 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 //		else
 //			return;
 //	}
-//    });
+        free(new_data);
+    });
 }
 -(void)on_Recv:(char*)data length:(int)length{
 	static short requestLength=0;

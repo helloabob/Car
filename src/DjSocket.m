@@ -16,6 +16,7 @@
 @synthesize label;
 //@synthesize delegate;
 @synthesize image;
+@synthesize fullPath=fullPath;
 
 @synthesize scrollView;
 
@@ -28,7 +29,6 @@ AVAssetWriterInputPixelBufferAdaptor *adaptor;
 
 unsigned char *myBuff;
 //dispatch_queue_t dispatchQueue;
-NSString *fullPath;
 int  frame;
 CGSize size;
 int videoflag=0;
@@ -69,7 +69,7 @@ int timestamp;
     static DjSocket *sharedNetUtilsInstance = nil;
     static dispatch_once_t predicate; dispatch_once(&predicate, ^{
         sharedNetUtilsInstance = [[self alloc] init];
-        sharedNetUtilsInstance->serial_queue = dispatch_queue_create("serial_dj", DISPATCH_QUEUE_SERIAL);
+        sharedNetUtilsInstance->serial_queue = dispatch_queue_create("com.bo.serial_dj", NULL);
     });
     return sharedNetUtilsInstance;
 }
@@ -131,20 +131,22 @@ int timestamp;
 	//	sleep(1);
 	//[self saveScreen];
 	//}
-	if(imgView.image!=nil){
-		[imgView.image release];
-	}
-    imgView.image=image;
+//	if(imgView.image!=nil){
+//		[imgView.image release];
+//	}
+//    imgView.image=image;
     
-    
-    [scrollView setDisplayImage:image];
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        [scrollView setDisplayImage:image];
+    });
     
 	//if (isCamera){
 	//	sleep(1);
 	//[self saveScreen];
 	//}
 	if (videoflag==1) {
-        [self performSelectorOnMainThread:@selector(writeVideo) withObject:nil waitUntilDone:!NO];
+        [self writeVideo];
+//        [self performSelectorOnMainThread:@selector(writeVideo) withObject:nil waitUntilDone:!NO];
         
 		//[self writeVideo];
 	}
@@ -165,38 +167,58 @@ int timestamp;
 }
 
 - (void)onReceivedData:(unsigned char*)data length:(int)length {
-//    dispatch_async(serial_queue, ^(){
-        NSLog(@"recei_video_data");
-        int pos=0;
-        
-        if (scrollView.superview == nil) {
-            jpgData.length = 0;
-            return;
+//    NSLog(@"recei:%@", [NSData dataWithBytes:data length:length]);
+//    NSLog(@"addr:%8x", self);
+    if (_shouldReceive==NO) {
+        return;
+    }
+    
+//    unsigned char *new_data=data;
+    unsigned char *new_data=malloc(length);
+    memcpy(new_data, data, length);
+    dispatch_async(serial_queue, ^(){
+        if (_shouldReceive==NO) {
+            free(new_data);
+            return ;
         }
+    
+//        int pos=0;
         
-        position = 0;
+//        if (scrollView.superview == nil) {
+//            jpgData.length = 0;
+//            free(new_data);
+//            NSLog(@"---------end---------");
+//            return;
+//        }
+        
+//        position = 0;
         //	while (YES) {
         //∂¡header
-        if(data[pos] != 0x7e)	return;
-        position = 0;
+//        if(new_data[pos] != 0x7e)return;
+//        position = 0;
         unsigned short requestLength;
-        [[NSData dataWithBytes:&data[1] length:2] getBytes:&requestLength length:2];
+        [[NSData dataWithBytes:&new_data[1] length:2] getBytes:&requestLength length:2];
         /**/
-        char *tvData = (char *)&data[8];
+        char *tvData = (char *)&new_data[8];
         
         [jpgData appendBytes:&tvData[3] length:requestLength-9];
+//        NSLog(@"video_type:%u", tvData[0]);
         if(tvData[1]-1==tvData[2])
         {
-            image = [[UIImage alloc] initWithData:jpgData];
+            self.image = [UIImage imageWithData:jpgData];
             //if (isCamera){
             //	sleep(1);
             //	[self saveScreen];
             //}
-            [self performSelectorOnMainThread:@selector(aa) withObject:nil waitUntilDone:!NO];
+            if (scrollView.superview!=nil) {
+                [self aa];
+            }
+//            [self performSelectorOnMainThread:@selector(aa) withObject:nil waitUntilDone:!NO];
             
             jpgData.length=0;
         }
-//    });
+        free(new_data);
+    });
 }
 
 -(void)on_Recv:(char*)data length:(int)length{
@@ -295,7 +317,7 @@ int timestamp;
 	[buildPath appendString:@"temporary"];
 	[buildPath appendString:[NSString stringWithFormat:@"%d",aNumber]];
 	[buildPath appendString:@".mov"];
-    fullPath = [[NSHomeDirectory() stringByAppendingPathComponent:buildPath] retain];
+    self.fullPath = [NSHomeDirectory() stringByAppendingPathComponent:buildPath];
 	[buildPath release];
 	
 	//NSString *moviePath = [[NSBundle mainBundle] pathForResource:@"movie" ofType:@"mov"];

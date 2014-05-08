@@ -175,12 +175,14 @@ typedef enum ActionState{
 //    [self.view bringSubviewToFront:viewSpeak];
     DemoViewController *vc = [[[DemoViewController alloc] init] autorelease];
     [self.navigationController pushViewController:vc animated:YES];
+    [DjSocket sharedInstance].shouldReceive=YES;
 }
 
 - (void)returnPage1{
 //    [self.view bringSubviewToFront:viewDial];
     if (self.navigationController.visibleViewController!=self) {
         [[myAudio sharedInstance] stopPlay];
+        [DjSocket sharedInstance].shouldReceive=NO;
         [self.navigationController popToRootViewControllerAnimated:NO];
     }
 }

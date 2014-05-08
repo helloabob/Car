@@ -68,16 +68,14 @@ void OnCalleeVideo(unsigned char *data, int len)
         if (bReadyToSendVideo==false) {
             return;
         }
-        if ([[NetUtils sharedInstance].videoDelegate respondsToSelector:@selector(onReceivedData:length:)]) {
-            [[NetUtils sharedInstance].videoDelegate onReceivedData:data length:len];
-        }
+        [[NetUtils sharedInstance].videoDelegate onReceivedData:data length:len];
+        
     } else if (data[7]==0x0f) {
         if (bReadyToSendVideo==false) {
             return;
         }
-        if ([[NetUtils sharedInstance].audioDelegate respondsToSelector:@selector(onReceivedData:length:)]) {
-            [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
-        }
+        [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
+        
     }
 }
 

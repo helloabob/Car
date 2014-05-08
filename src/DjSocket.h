@@ -28,11 +28,14 @@
 	char header[8];
 	char buff[512*512];
 	unsigned char abuff[1200];
+    NSString *fullPath;
 }
 @property(nonatomic,assign)UIImageView *imgView;
 @property(nonatomic,assign)UILabel*label;
 //@property(nonatomic,assign)id<DjSocketDelegate> delegate;
-@property(nonatomic,assign)UIImage *image;
+@property(nonatomic,retain)UIImage *image;
+@property(nonatomic,assign)BOOL shouldReceive;
+@property(nonatomic,retain)NSString *fullPath;
 
 + (instancetype)sharedInstance;
 
