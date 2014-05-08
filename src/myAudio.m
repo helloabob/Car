@@ -15,6 +15,7 @@
 
 @implementation myAudio{
     dispatch_queue_t serial_queue;
+    ALenum al_error;
 }
 
 @synthesize mContext;
@@ -110,9 +111,9 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 	
 	alSpeedOfSound(1.0);
 	
-	alDopplerVelocity(1.0);
+//	alDopplerVelocity(1.0);
 	
-	alDopplerFactor(1.0);
+//	alDopplerFactor(1.0);
 	
 	alSourcef(outSourceID, AL_PITCH, 1.0f);
 	
@@ -150,22 +151,51 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 	ALuint bufferID = 0;
 	
 	alGenBuffers(1, &bufferID);
+    al_error=0;
+    if ((al_error = alGetError()) != AL_NO_ERROR)
+    {
+        NSLog(@"error1:%d", al_error);
+//        alDeleteBuffers(1, &bufferID);
+//        al_error=0;
+//        if ((al_error = alGetError()) != AL_NO_ERROR)
+//        {
+//            NSLog(@"error1-1:%d", al_error);
+//        }else{
+//            NSLog(@"solved");
+//        }
+//        return;
+    }
 	
     
+
+	NSLog(@"bufferID:%u", bufferID);
+//	NSData * tmpData = [NSData dataWithBytes:data length:dataSize];
 	
-	NSData * tmpData = [NSData dataWithBytes:data length:dataSize];
-	
-	alBufferData(bufferID, AL_FORMAT_MONO16, (char*)[tmpData bytes], (ALsizei)[tmpData length], 8000);
+	alBufferData(bufferID, AL_FORMAT_MONO16, (char*)data, (ALsizei)dataSize, 8000);
+    
+    al_error=0;
+    if ((al_error = alGetError()) != AL_NO_ERROR)
+    {
+        NSLog(@"error2:%d", al_error);
+    }
 	
 	alSourceQueueBuffers(outSourceID, 1, &bufferID);
-	
+	al_error=0;
+    if ((al_error = alGetError()) != AL_NO_ERROR)
+    {
+        NSLog(@"error3:%d", al_error);
+    }
 	
 	[self updataQueueBuffer];
+	al_error=0;
+    if ((al_error = alGetError()) != AL_NO_ERROR)
+    {
+        NSLog(@"error4:%d", al_error);
+    }
 	
+//	ALint stateVaue;
 	
-	ALint stateVaue;
-	
-	alGetSourcei(outSourceID, AL_SOURCE_STATE, &stateVaue);
+//	alGetSourcei(outSourceID, AL_SOURCE_STATE, &stateVaue);
 	
 	
 	[ticketCondition unlock];
@@ -173,8 +203,12 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 	[ticketCondition release];
 	
 	ticketCondition = nil;
-	alDeleteBuffers(1, &bufferID);
-	
+//	alDeleteBuffers(1, &bufferID);
+	al_error=0;
+    if ((al_error = alGetError()) != AL_NO_ERROR)
+    {
+        NSLog(@"error5:%d", al_error);
+    }
 	[pool release];
 	
 	pool = nil;
@@ -215,9 +249,14 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 	
 	
 //	NSLog(@"Processed = %d\n", processed);
-	
 //	NSLog(@"Queued = %d\n", queued);
 	
+    al_error=0;
+    if ((al_error = alGetError()) != AL_NO_ERROR)
+    {
+        NSLog(@"error7:%d", al_error);
+    }
+    
 	
     while(processed--)
 		
@@ -230,6 +269,11 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 		alDeleteBuffers(1, &buffD);
 		
 	}
+    al_error=0;
+    if ((al_error = alGetError()) != AL_NO_ERROR)
+    {
+        NSLog(@"error8:%d", al_error);
+    }
 	
 	
 	return YES;
@@ -238,6 +282,11 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 
 -(void)playSound{
 	alSourcePlay(outSourceID);
+    al_error=0;
+    if ((al_error = alGetError()) != AL_NO_ERROR)
+    {
+        NSLog(@"error6:%d", al_error);
+    }
 }
 
 -(void)stopSound{

@@ -55,6 +55,7 @@ int OnReady()
     return 1;
 }
 
+
 void OnCalleeVideo(unsigned char *data, int len)
 {
 //	printf("[%s]UI received video data, len: %d, data: \"%s\"\n",__FUNCTION__, len, data);
@@ -64,6 +65,40 @@ void OnCalleeVideo(unsigned char *data, int len)
     if (data[0] != 0x7E) {
         return;
     }
+    
+//    unsigned int serial=0;
+//    [[NSData dataWithBytes:&data[3] length:4] getBytes:&serial length:4];
+//    NSLog(@"serial:%u", serial);
+    
+//    if (data[7]==0x0e) {
+//        static unsigned short last_role=0;
+//        char *tvData = (char *)&data[8];
+//        if (last_role==0 && last_role==(unsigned short)tvData[2]) {
+//        } else if (last_role==(unsigned short)tvData[2]-1) {
+//        } else {
+//            NSLog(@"---------------------Packet Loss---------------------");
+//        }
+//        last_role=tvData[2];
+//        NSLog(@"cur:%u and total:%u", tvData[2], tvData[1]);
+//        if(tvData[1]-1==tvData[2])
+//        {
+//            last_role=0;
+//        }
+//    }
+    
+    /**/
+    unsigned char cs=data[len-1];
+    unsigned char tmp=0;
+    for(int i=0;i<len-1;i++){
+        tmp+=data[i];
+    }
+    if (cs!=tmp) {
+//        NSLog(@"edata:%@", [NSData dataWithBytes:data length:len]);
+        return;
+    } else {
+//        NSLog(@"odata:%@", [NSData dataWithBytes:data length:len]);
+    }
+    
     if (data[7]==0x0e) {
         if (bReadyToSendVideo==false) {
             return;

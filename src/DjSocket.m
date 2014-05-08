@@ -196,15 +196,41 @@ int timestamp;
         //∂¡header
 //        if(new_data[pos] != 0x7e)return;
 //        position = 0;
+        static BOOL canAppend=NO;
         unsigned short requestLength;
         [[NSData dataWithBytes:&new_data[1] length:2] getBytes:&requestLength length:2];
         /**/
         char *tvData = (char *)&new_data[8];
         
-        [jpgData appendBytes:&tvData[3] length:requestLength-9];
+        
+        
+        
+        
 //        NSLog(@"video_type:%u", tvData[0]);
-        if(tvData[1]-1==tvData[2])
+        static unsigned short last_role=0;
+        if (last_role==0 && last_role==(unsigned short)tvData[2]) {
+        } else if (last_role==(unsigned short)tvData[2]-1) {
+        } else {
+            NSLog(@"---------------------Packet Loss---------------------");
+            canAppend=NO;
+            jpgData.length=0;
+        }
+        
+        if (tvData[2]==0) {
+            jpgData.length=0;
+            canAppend=YES;
+        }
+        
+        last_role=tvData[2];
+        NSLog(@"cur:%u and total:%u", tvData[2], tvData[1]);
+        
+        if (canAppend==YES) {
+            [jpgData appendBytes:&tvData[3] length:requestLength-9];
+        }
+        if(tvData[1]-1==tvData[2] && jpgData.length>0)
         {
+            canAppend=NO;
+            last_role=0;
             self.image = [UIImage imageWithData:jpgData];
             //if (isCamera){
             //	sleep(1);
