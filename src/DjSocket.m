@@ -216,33 +216,64 @@ int timestamp;
             jpgData.length=0;
         }
         
-        if (tvData[2]==0) {
+//        if (tvData[2]==0) {
+//            jpgData.length=0;
+//            canAppend=YES;
+//        }
+        static unsigned int global_serial=0;
+        static unsigned int global_total=0;
+        
+        unsigned int total=0;
+        memcpy(&total, &tvData[1], 1);
+        unsigned int serial=0;
+        memcpy(&serial, &new_data[3], 4);
+        
+        if (global_serial!=serial&&global_serial!=0) {
+            //try to refresh frame data.
+            
+            if (jpgDict.count==global_total) {
+                for (int k=0; k<jpgDict.count; k++) {
+                    [jpgData appendData:[jpgDict objectForKey:[NSString stringWithFormat:@"%d",k]]];
+                }
+                self.image = [UIImage imageWithData:jpgData];
+                if (scrollView.superview!=nil) {
+                    [self aa];
+                }
+            }
+            
             jpgData.length=0;
-            canAppend=YES;
+            [jpgDict removeAllObjects];
+            global_serial=0;
+            global_total=0;
+        }
+        global_serial=serial;
+        if (global_total<total) {
+            global_total=total;
+        }
+        
+        unsigned int cur=0;
+        memcpy(&cur, &tvData[2], 1);
+        NSString *key = [NSString stringWithFormat:@"%u", cur];
+        if (![jpgDict objectForKey:key]) {
+            [jpgDict setObject:[NSData dataWithBytes:&tvData[3] length:requestLength-9] forKey:key];
         }
         
         last_role=tvData[2];
         NSLog(@"cur:%u and total:%u", tvData[2], tvData[1]);
         
-        if (canAppend==YES) {
-            [jpgData appendBytes:&tvData[3] length:requestLength-9];
-        }
-        if(tvData[1]-1==tvData[2] && jpgData.length>0)
-        {
-            canAppend=NO;
-            last_role=0;
-            self.image = [UIImage imageWithData:jpgData];
-            //if (isCamera){
-            //	sleep(1);
-            //	[self saveScreen];
-            //}
-            if (scrollView.superview!=nil) {
-                [self aa];
-            }
-//            [self performSelectorOnMainThread:@selector(aa) withObject:nil waitUntilDone:!NO];
-            
-            jpgData.length=0;
-        }
+//        if (canAppend==YES) {
+//            [jpgData appendBytes:&tvData[3] length:requestLength-9];
+//        }
+//        if(tvData[1]-1==tvData[2] && jpgData.length>0)
+//        {
+//            canAppend=NO;
+//            last_role=0;
+//            self.image = [UIImage imageWithData:jpgData];
+//            if (scrollView.superview!=nil) {
+//                [self aa];
+//            }
+//            jpgData.length=0;
+//        }
         free(new_data);
     });
 }
@@ -583,6 +614,7 @@ int timestamp;
     if (self = [super init]){
 //        socket = [[AsyncSocket alloc] initWithDelegate:self];		
 		jpgData=[[NSMutableData alloc]init];
+        jpgDict=[[NSMutableDictionary alloc]init];
 		
         imgView=[[UIImageView alloc] initWithFrame:CGRectMake(0,0,320,480)];
 		imgView.backgroundColor=[UIColor redColor];

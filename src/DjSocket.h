@@ -17,6 +17,9 @@
 @interface DjSocket : NSObject<NetUtilsDelegate>{
 //    AsyncSocket *socket;
 //	id<DjSocketDelegate> delegate;
+    
+    NSMutableDictionary *jpgDict;
+    
 	NSMutableData *jpgData;
 	UIImageView *imgView;
     KKScrollView *scrollView;
