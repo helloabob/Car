@@ -411,8 +411,7 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
 //		if(new_data[pos] != 0x7e)	return;
 		position = 0;
         unsigned short requestLength;
-        [[NSData dataWithBytes:&new_data[1] length:2] getBytes:&requestLength length:2];
-//    NSLog(@"total_len:%d    req_len:%d", length, requestLength);
+        memcpy(&requestLength, &new_data[1], 2);
         [self openAudioFromQueue:&new_data[8] dataSize:requestLength-6];
 //        
 //		while (position<sizeof(struct Tphead) && length-pos>0) {
@@ -506,7 +505,7 @@ static void HandleInputBuffer (void *aqData, AudioQueueRef inAQ, AudioQueueBuffe
     }
     static int count=0;
     count++;
-    if (count==50) {
+    if (count%10==0) {
         NSLog(@"send_audio_data");
         count=0;
     }

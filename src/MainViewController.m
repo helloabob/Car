@@ -148,6 +148,7 @@ typedef enum ActionState{
 - (void)didEnterBackground {
     if (shouldInitNetwork==NO) {
         shouldInitNetwork=YES;
+        [MBProgressHUD hideHUDForView:self.view animated:NO];
         [[NetUtils sharedInstance] abortNetwork];
         [self returnPage1];
     }

@@ -18,7 +18,7 @@
 //    AsyncSocket *socket;
 //	id<DjSocketDelegate> delegate;
     
-    NSMutableDictionary *jpgDict;
+//    NSMutableDictionary *jpgDict;
     
 	NSMutableData *jpgData;
 	UIImageView *imgView;
