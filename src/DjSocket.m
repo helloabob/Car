@@ -170,6 +170,7 @@ int timestamp;
 //    NSLog(@"recei:%@", [NSData dataWithBytes:data length:length]);
 //    NSLog(@"addr:%8x", self);
     if (_shouldReceive==NO) {
+        jpgData.length=0;
         return;
     }
     
@@ -178,6 +179,7 @@ int timestamp;
     memcpy(new_data, data, length);
     dispatch_async(serial_queue, ^(){
         if (_shouldReceive==NO) {
+            jpgData.length=0;
             free(new_data);
             return ;
         }

@@ -109,7 +109,7 @@ void OnCalleeVideo(unsigned char *data, int len)
         if (bReadyToSendVideo==false) {
             return;
         }
-        [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
+//        [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
         
     }
 }
@@ -370,9 +370,8 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
         for(int i=0,f=_mdata.length-1;i<f;i++){
             d[f]+=d[i];
         }
-//        NSLog(@"sendData:%@", _mdata);
         sendData((unsigned char *)_mdata.bytes, _mdata.length);
-        bytesSent += bytesThisTime;
+        bytesSent+=bytesThisTime;
     }
 }
 

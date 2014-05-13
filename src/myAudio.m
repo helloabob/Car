@@ -16,7 +16,9 @@
 @implementation myAudio{
     dispatch_queue_t serial_queue;
     ALenum al_error;
+    dispatch_queue_t serial_send_audio;
 }
+static myAudio *sharedNetUtilsInstance = nil;
 
 @synthesize mContext;
 @synthesize mDevice;
@@ -38,6 +40,7 @@ BOOL isPlay=YES;
 
 -(void)startPlay{
 	isPlay=YES;
+//    [self performSelectorInBackground:@selector(startRecording:) withObject:FILEPATH];
     [self startRecording:FILEPATH];
 }
 -(void)stopPlay{
@@ -46,19 +49,17 @@ BOOL isPlay=YES;
     [self stopRecording];
 }
 + (instancetype)sharedInstance {
-    static myAudio *sharedNetUtilsInstance = nil;
+    
     static dispatch_once_t predicate; dispatch_once(&predicate, ^{
         sharedNetUtilsInstance = [[self alloc] init];
-        sharedNetUtilsInstance->serial_queue = dispatch_queue_create("serial_audio", DISPATCH_QUEUE_SERIAL);
-
+        sharedNetUtilsInstance->serial_queue=dispatch_queue_create("serial_audio", NULL);
+        sharedNetUtilsInstance->serial_send_audio=dispatch_queue_create("serial_send", NULL);
     });
     return sharedNetUtilsInstance;
 }
 
 void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
-    
     myAudio *controller = (myAudio *) inUserData;
-	
 	if (interruptionState==kAudioSessionBeginInterruption) {
 		[controller _haltOpenALSession];
 	} else if (interruptionState==kAudioSessionEndInterruption) {
@@ -496,10 +497,6 @@ static void HandleInputBuffer (void *aqData, AudioQueueRef inAQ, AudioQueueBuffe
 							   UInt32 inNumPackets, const AudioStreamPacketDescription *inPacketDesc)
 {
     RecordState *pAqData = (RecordState *) aqData;
-    
-    if (inNumPackets == 0 && pAqData->dataFormat.mBytesPerPacket != 0)
-        inNumPackets = inBuffer->mAudioDataByteSize / pAqData->dataFormat.mBytesPerPacket;
-    
     if (pAqData->recording==NO) {
         return;
     }
@@ -510,75 +507,51 @@ static void HandleInputBuffer (void *aqData, AudioQueueRef inAQ, AudioQueueBuffe
         count=0;
     }
     
-    [[NetUtils sharedInstance] startSendData:[NSData dataWithBytes:inBuffer->mAudioData length:inBuffer->mAudioDataByteSize] withType:CommandTypeAudio];
+    NSData *audioData = [NSData dataWithBytes:inBuffer->mAudioData length:inBuffer->mAudioDataByteSize];
+    dispatch_async(sharedNetUtilsInstance->serial_send_audio, ^(){
+        [[NetUtils sharedInstance] startSendData:audioData withType:CommandTypeAudio];
+    });
     AudioQueueEnqueueBuffer(pAqData->queue, inBuffer, 0, NULL);
-    
-//    if (AudioFileWritePackets(pAqData->audioFile, NO, inBuffer->mAudioDataByteSize, inPacketDesc, pAqData->currentPacket, &inNumPackets, inBuffer->mAudioData) == noErr)
-//    {
-//        
-//        pAqData->currentPacket += inNumPackets;
-//        if (pAqData->recording == 0) return;
-//        AudioQueueEnqueueBuffer (pAqData->queue, inBuffer, 0, NULL);
-//    }
-}
-
-void DeriveBufferSize (AudioQueueRef audioQueue, AudioStreamBasicDescription ASBDescription, Float64 seconds, UInt32 *outBufferSize)
-{
-    static const int maxBufferSize = 0x50000; // punting with 50k
-    int maxPacketSize = ASBDescription.mBytesPerPacket;
-    if (maxPacketSize == 0)
-	{
-        UInt32 maxVBRPacketSize = sizeof(maxPacketSize);
-        AudioQueueGetProperty(audioQueue, kAudioConverterPropertyMaximumOutputPacketSize, &maxPacketSize, &maxVBRPacketSize);
-    }
-    
-    Float64 numBytesForTime = ASBDescription.mSampleRate * maxPacketSize * seconds;
-    *outBufferSize =  (UInt32)((numBytesForTime < maxBufferSize) ? numBytesForTime : maxBufferSize);
 }
 
 - (BOOL)startRecording: (NSString *) filePath
 {
-	// file url
     
     AVAudioSession * audioSession = [AVAudioSession sharedInstance];
-//    [audioSession setCategory:AVAudioSessionCategoryPlayback error: nil];
     [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error: nil];
-
-    
     UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
     AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,
                              sizeof (audioRouteOverride),
                              &audioRouteOverride);
-    
     [audioSession setActive:YES error: nil];
     AudioStreamBasicDescription *format = &recordState.dataFormat;
     format->mSampleRate = 8000.0;
     format->mFormatID = kAudioFormatLinearPCM;
-//    format->mFormatFlags = kLinearPCMFormatFlagIsBigEndian |  kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
     format->mFormatFlags = kAudioFormatFlagIsSignedInteger;
-    //    format->mFormatFlags = kLinearPCMFormatFlagIsSignedInteger|kLinearPCMFormatFlagIsPacked;
-    format->mChannelsPerFrame = 1; // mono
+    format->mChannelsPerFrame = 1;
     format->mBitsPerChannel = 16;
     format->mFramesPerPacket = 1;
     format->mBytesPerPacket = 2;
     format->mBytesPerFrame = 2;
     format->mReserved = 0;
-    CFURLRef fileURL =  CFURLCreateFromFileSystemRepresentation(NULL, (const UInt8 *) [filePath UTF8String], [filePath length], NO);
+//    CFURLRef fileURL =  CFURLCreateFromFileSystemRepresentation(NULL, (const UInt8 *) [filePath UTF8String], [filePath length], NO);
     // recordState.currentPacket = 0;
     
 	// new input queue
     OSStatus status;
     status = AudioQueueNewInput(&recordState.dataFormat, HandleInputBuffer, &recordState, CFRunLoopGetCurrent(),kCFRunLoopCommonModes, 0, &recordState.queue);
-    if (status) {CFRelease(fileURL); printf("Could not establish new queue\n"); return NO;}
-    
+    if (status) {NSLog(@"Could not establish new queue");return NO;}
+//    if (status) {CFRelease(fileURL); printf("Could not establish new queue\n"); return NO;}
 	// create new audio file
 //    status = AudioFileCreateWithURL(fileURL, kAudioFileAIFFType, &recordState.dataFormat, kAudioFileFlags_EraseFile, &recordState.audioFile);
 //	CFRelease(fileURL); // thanks august joki
 //    if (status) {printf("Could not create file to record audio\n"); return NO;}
     
 	// figure out the buffer size
-    DeriveBufferSize(recordState.queue, recordState.dataFormat, 0.5, &recordState.bufferByteSize);
+//    DeriveBufferSize(recordState.queue, recordState.dataFormat, 0.5, &recordState.bufferByteSize);
 	
+    recordState.bufferByteSize=8000;
+    
 	// allocate those buffers and enqueue them
     for(int i = 0; i < NUM_BUFFERS; i++)
     {
