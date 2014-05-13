@@ -109,7 +109,7 @@ void OnCalleeVideo(unsigned char *data, int len)
         if (bReadyToSendVideo==false) {
             return;
         }
-//        [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
+        [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
         
     }
 }

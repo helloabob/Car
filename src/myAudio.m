@@ -40,7 +40,6 @@ BOOL isPlay=YES;
 
 -(void)startPlay{
 	isPlay=YES;
-//    [self performSelectorInBackground:@selector(startRecording:) withObject:FILEPATH];
     [self startRecording:FILEPATH];
 }
 -(void)stopPlay{
