@@ -7,6 +7,6 @@
 
 #define kPostNotif(a,b) [[NSNotificationCenter defaultCenter] postNotificationName:a object:b userInfo:nil];
 
-#if 1
+#if 0
 #define NSLog(...) {}
 #endif

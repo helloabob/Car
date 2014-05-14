@@ -258,7 +258,7 @@ int timestamp;
 //        }
         
         last_role=tvData[2];
-        NSLog(@"serial:%u cur:%u and total:%u", serial, tvData[2], tvData[1]);
+//        NSLog(@"serial:%u cur:%u and total:%u", serial, tvData[2], tvData[1]);
         
         if (canAppend==YES) {
             [jpgData appendBytes:&tvData[3] length:requestLength-9];
@@ -270,7 +270,7 @@ int timestamp;
         {
             static int frame_count=0;
             frame_count++;
-            NSLog(@"frame:%d", frame_count);
+            NSLog(@"frame:%d count:%d", frame_count, jpgData.length);
             canAppend=NO;
             last_role=0;
             self.image = [UIImage imageWithData:jpgData];

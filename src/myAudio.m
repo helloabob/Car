@@ -167,8 +167,6 @@ void interruptionListenerCallback(void  *inUserData ,UInt32 interruptionState){
     }
 	
     
-
-	NSLog(@"bufferID:%u", bufferID);
 //	NSData * tmpData = [NSData dataWithBytes:data length:dataSize];
 	
 	alBufferData(bufferID, AL_FORMAT_MONO16, (char*)data, (ALsizei)dataSize, 8000);
