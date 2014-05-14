@@ -19,6 +19,8 @@ typedef enum {
     CommandTypeRedSwitch,
     CommandTypeState,
     CommandTypeSpeech,
+    CommandTypeVideoResp,
+    CommandTypeAudioResp,
 }CommandType;
 
 @interface NetUtils : NSObject

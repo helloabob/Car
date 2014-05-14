@@ -45,6 +45,8 @@ typedef struct {
     uint32_t _port;
     NSString *_pwd;
     NSString *_callerid;
+    
+    dispatch_queue_t serial_queue;
 }
 
 int OnReady()
@@ -104,13 +106,15 @@ void OnCalleeVideo(unsigned char *data, int len)
             return;
         }
         [[NetUtils sharedInstance].videoDelegate onReceivedData:data length:len];
-        
+        NSData *resp=[NSData dataWithBytes:&data[3] length:4];
+        dispatch_async([NetUtils sharedInstance]->serial_queue, ^(){[[NetUtils sharedInstance] startSendData:resp withType:CommandTypeVideoResp];});
     } else if (data[7]==0x0f) {
         if (bReadyToSendVideo==false) {
             return;
         }
         [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
-        
+        NSData *resp=[NSData dataWithBytes:&data[3] length:4];
+        dispatch_async([NetUtils sharedInstance]->serial_queue, ^(){[[NetUtils sharedInstance] startSendData:resp withType:CommandTypeAudioResp];});
     }
 }
 
@@ -204,6 +208,7 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
     static NetUtils *sharedNetUtilsInstance = nil;
     static dispatch_once_t predicate; dispatch_once(&predicate, ^{
         sharedNetUtilsInstance = [[self alloc] init];
+        sharedNetUtilsInstance->serial_queue = dispatch_queue_create("com.bo.serial_net", NULL);
 //        signal(SIGPIPE,SIG_IGN);
 //        struct sigaction sa;
 //        sa.sa_handler = new_sa_handler;
@@ -329,6 +334,10 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
         return 0x08;
     } else if (type == CommandTypeSpeech) {
         return 0x09;
+    } else if (type == CommandTypeVideoResp) {
+        return 0x0e;
+    } else if (type == CommandTypeAudioResp) {
+        return 0x0f;
     } else {
         return 0x00;
     }
@@ -340,6 +349,9 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
 }
 
 - (void)startSendData:(NSData *)data withType:(CommandType)type {
+    if (cbfuncs__==NULL) {
+        return;
+    }
     static unsigned int _serial = 0;
     unsigned long long bytesSent = 0;
     while (data.length-bytesSent > 0) {
@@ -370,6 +382,11 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
         for(int i=0,f=_mdata.length-1;i<f;i++){
             d[f]+=d[i];
         }
+//        if (type==CommandTypeAudioResp||type==CommandTypeVideoResp) {
+//            unsigned int a;
+//            [data getBytes:&a];
+//            NSLog(@"resp:%d data:%u con:%@\n",type,a,_mdata);
+//        }
         sendData((unsigned char *)_mdata.bytes, _mdata.length);
         bytesSent+=bytesThisTime;
     }
