@@ -409,7 +409,6 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
 }
 
 - (void)thread_job {
-//    kAddObserver(@selector(<#selector#>), @"init");
     isInited = YES;
     canStop = NO;
     _firstCall = YES;
