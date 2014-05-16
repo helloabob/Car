@@ -33,7 +33,6 @@
 //		[alertView release];
 //	}
     
-    
 //    unsigned char aa = 0x7E;
 //    printf("aa:%x and add:%2s", aa, &aa);
     if ([self connectedToNetwork]==NO) {

@@ -206,7 +206,7 @@ int deta=32;
         [djSocket.scrollView addScale];
     }
     buttonRunLoop = YES;
-    [self performSelectorInBackground:@selector(buttonRunLoopHandler) withObject:nil];
+//    [self performSelectorInBackground:@selector(buttonRunLoopHandler) withObject:nil];
     
     
 }

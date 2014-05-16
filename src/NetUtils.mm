@@ -68,26 +68,6 @@ void OnCalleeVideo(unsigned char *data, int len)
         return;
     }
     
-//    unsigned int serial=0;
-//    [[NSData dataWithBytes:&data[3] length:4] getBytes:&serial length:4];
-//    NSLog(@"serial:%u", serial);
-    
-//    if (data[7]==0x0e) {
-//        static unsigned short last_role=0;
-//        char *tvData = (char *)&data[8];
-//        if (last_role==0 && last_role==(unsigned short)tvData[2]) {
-//        } else if (last_role==(unsigned short)tvData[2]-1) {
-//        } else {
-//            NSLog(@"---------------------Packet Loss---------------------");
-//        }
-//        last_role=tvData[2];
-//        NSLog(@"cur:%u and total:%u", tvData[2], tvData[1]);
-//        if(tvData[1]-1==tvData[2])
-//        {
-//            last_role=0;
-//        }
-//    }
-    
     /**/
     unsigned char cs=data[len-1];
     unsigned char tmp=0;
@@ -95,6 +75,9 @@ void OnCalleeVideo(unsigned char *data, int len)
         tmp+=data[i];
     }
     if (cs!=tmp) {
+        unsigned short len2;
+        memcpy(&len2, &data[1], 2);
+        NSLog(@"error in cs t_len:%u type:%u len:%u cs:%02x tmp:%02x", len, data[7], len2, cs, tmp);
 //        NSLog(@"edata:%@", [NSData dataWithBytes:data length:len]);
         return;
     } else {
@@ -106,15 +89,17 @@ void OnCalleeVideo(unsigned char *data, int len)
             return;
         }
         [[NetUtils sharedInstance].videoDelegate onReceivedData:data length:len];
-        NSData *resp=[NSData dataWithBytes:&data[3] length:4];
+        NSMutableData *resp = [NSMutableData data];
+        [resp appendBytes:&data[9] length:1];
+        [resp appendBytes:&data[11] length:1];
         dispatch_async([NetUtils sharedInstance]->serial_queue, ^(){[[NetUtils sharedInstance] startSendData:resp withType:CommandTypeVideoResp];});
     } else if (data[7]==0x0f) {
         if (bReadyToSendVideo==false) {
             return;
         }
-        [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
-        NSData *resp=[NSData dataWithBytes:&data[3] length:4];
-        dispatch_async([NetUtils sharedInstance]->serial_queue, ^(){[[NetUtils sharedInstance] startSendData:resp withType:CommandTypeAudioResp];});
+//        [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
+//        NSData *resp=[NSData dataWithBytes:&data[3] length:4];
+//        dispatch_async([NetUtils sharedInstance]->serial_queue, ^(){[[NetUtils sharedInstance] startSendData:resp withType:CommandTypeAudioResp];});
     }
 }
 
@@ -382,11 +367,9 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
         for(int i=0,f=_mdata.length-1;i<f;i++){
             d[f]+=d[i];
         }
-//        if (type==CommandTypeAudioResp||type==CommandTypeVideoResp) {
-//            unsigned int a;
-//            [data getBytes:&a];
-//            NSLog(@"resp:%d data:%u con:%@\n",type,a,_mdata);
-//        }
+        if (type==CommandTypeAudioResp||type==CommandTypeVideoResp) {
+            NSLog(@"resp:%d con:%@\n",type,_mdata);
+        }
         sendData((unsigned char *)_mdata.bytes, _mdata.length);
         bytesSent+=bytesThisTime;
     }
