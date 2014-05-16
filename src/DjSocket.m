@@ -223,7 +223,7 @@ int timestamp;
 //            canAppend=YES;
 //        }
         
-        NSLog(@"frame_id:%02x cur:%02x and total:%02x", tvData[1], tvData[3], tvData[2]);
+        NSLog(@"frame_id:%02x cur:%u and total:%u", tvData[1], tvData[3], tvData[2]);
         
         static unsigned char global_frame_id=0xff;
         static unsigned char global_total=0;
@@ -248,7 +248,7 @@ int timestamp;
                     [self aa];
                 }
             } else {
-                NSLog(@"missed count:%u and allkeys:%@", global_total, jpgDict.allKeys);
+                NSLog(@"missed frame:%02x count:%u and allkeys:%@", global_frame_id, global_total, jpgDict.allKeys);
             }
             
             jpgData.length=0;
