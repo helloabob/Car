@@ -25,7 +25,7 @@
 #import <AudioToolbox/AudioQueue.h>
 #import <AudioToolbox/AudioFile.h>
 
-#define NUM_BUFFERS 10
+#define NUM_BUFFERS 20
 #define DOCUMENTS_FOLDER [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
 
 typedef struct

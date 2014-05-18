@@ -25,7 +25,8 @@ static BOOL bCallReady=false;
 
 F2FCBFUNCTIONS *cbfuncs__=NULL;
 
-#define kMaxBytes 539
+//#define kMaxBytes 539
+#define kMaxBytes 1200
 
 typedef struct {
     unsigned char flag;

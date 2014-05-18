@@ -547,7 +547,8 @@ static void HandleInputBuffer (void *aqData, AudioQueueRef inAQ, AudioQueueBuffe
 	// figure out the buffer size
 //    DeriveBufferSize(recordState.queue, recordState.dataFormat, 0.5, &recordState.bufferByteSize);
 	
-    recordState.bufferByteSize=8000;
+//    recordState.bufferByteSize=8000;
+    recordState.bufferByteSize=1024;
     
 	// allocate those buffers and enqueue them
     for(int i = 0; i < NUM_BUFFERS; i++)

@@ -227,6 +227,7 @@ int timestamp;
         
         static unsigned char global_frame_id=0xff;
         static unsigned char global_total=0;
+        static BOOL is_first_recei_audio=YES;
         
         unsigned char total=0;
         memcpy(&total, &tvData[2], 1);
@@ -234,7 +235,7 @@ int timestamp;
         unsigned char frame_id=0;
         memcpy(&frame_id, &tvData[1], 1);
         
-        if (global_frame_id!=frame_id&&global_frame_id!=0xff) {
+        if (global_frame_id!=frame_id) {
             //try to refresh frame data.
             if (jpgDict.count==global_total) {
                 NSLog(@"show");
@@ -248,7 +249,9 @@ int timestamp;
                     [self aa];
                 }
             } else {
-                NSLog(@"missed frame:%02x count:%u and allkeys:%@", global_frame_id, global_total, jpgDict.allKeys);
+                if (is_first_recei_audio) {
+                    is_first_recei_audio=NO;
+                } else NSLog(@"missed frame:%02x count:%u and allkeys:%@", global_frame_id, global_total, jpgDict.allKeys);
             }
             
             jpgData.length=0;
