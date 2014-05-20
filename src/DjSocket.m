@@ -12,6 +12,8 @@
 @implementation DjSocket {
     dispatch_queue_t serial_queue;
     BOOL is_first_frame;
+    unsigned char global_total;
+    unsigned char global_frame_id;
 }
 @synthesize imgView;
 @synthesize label;
@@ -221,8 +223,6 @@ int timestamp;
         
         NSLog(@"frame_id:%02x cur:%u and total:%u", tvData[1], tvData[3], tvData[2]);
         
-        static unsigned char global_frame_id=0xff;
-        static unsigned char global_total=0;
         
         unsigned char total=tvData[2];
         
@@ -232,10 +232,8 @@ int timestamp;
         if (is_first_frame==YES) {
             jpgData.length=0;
             [jpgDict removeAllObjects];
-            global_total=0;
             is_first_frame=NO;
-        }
-        if (global_frame_id!=frame_id) {
+        } else if (global_frame_id!=frame_id) {
             if (global_frame_id<frame_id||(global_frame_id==0xff&&frame_id==0x00)) {
                 if (global_total==jpgDict.count) {
                     NSLog(@"show");
@@ -655,6 +653,8 @@ int timestamp;
 */
 - (void)startShow {
     is_first_frame=YES;
+    global_total=0x00;
+    global_frame_id=0xff;
 }
 
 #pragma mark socket
