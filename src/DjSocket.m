@@ -250,7 +250,6 @@ int timestamp;
                 }
                 jpgData.length=0;
                 [jpgDict removeAllObjects];
-            } else if (global_frame_id==frame_id) {
             } else {
                 free(new_data);
                 return;
