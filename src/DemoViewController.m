@@ -145,6 +145,7 @@ int deta=32;
     //   [djSocket.scrollView setDisplayImage:[UIImage imageNamed:@"ttt1.jpg"]];
     
 	[self.view addSubview:djSocket.scrollView];
+    [djSocket startShow];
     
 	
 	//[self showButton:40 image1:@"icon_r2_c4_s1.png" image2:@"icon_r2_c12_s1.png" x:10 y:5 Hidden:NO];//放大

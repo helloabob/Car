@@ -44,6 +44,8 @@
 
 @property (nonatomic, retain) KKScrollView *scrollView;
 
+- (void)startShow;
+
 -(void)test:(int)cmd;
 -(int)getTimestamp;
 

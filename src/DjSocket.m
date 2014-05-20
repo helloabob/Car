@@ -11,6 +11,7 @@
 
 @implementation DjSocket {
     dispatch_queue_t serial_queue;
+    BOOL is_first_frame;
 }
 @synthesize imgView;
 @synthesize label;
@@ -174,21 +175,16 @@ int timestamp;
         [jpgDict removeAllObjects];
         return;
     }
-    
-    
 //    unsigned char *new_data=data;
     unsigned char *new_data=malloc(length);
     memcpy(new_data, data, length);
     dispatch_async(serial_queue, ^(){
-        
         if (_shouldReceive==NO) {
             jpgData.length=0;
             [jpgDict removeAllObjects];
             free(new_data);
             return ;
         }
-        
-    
 //        int pos=0;
         
 //        if (scrollView.superview == nil) {
@@ -227,38 +223,66 @@ int timestamp;
         
         static unsigned char global_frame_id=0xff;
         static unsigned char global_total=0;
-        static BOOL is_first_recei_audio=YES;
         
-        unsigned char total=0;
-        memcpy(&total, &tvData[2], 1);
+        unsigned char total=tvData[2];
         
-        unsigned char frame_id=0;
-        memcpy(&frame_id, &tvData[1], 1);
+        unsigned char frame_id=tvData[1];
         
-        if (global_frame_id!=frame_id) {
-            //try to refresh frame data.
-            if (jpgDict.count==global_total) {
-                NSLog(@"show");
-                global_total=0;
-                jpgData.length=0;
-                for (int k=0; k<jpgDict.count; k++) {
-                    [jpgData appendData:[jpgDict objectForKey:[NSString stringWithFormat:@"%d",k]]];
-                }
-                self.image = [UIImage imageWithData:jpgData];
-                if (scrollView.superview!=nil) {
-                    [self aa];
-                }
-            } else {
-                if (is_first_recei_audio) {
-                    is_first_recei_audio=NO;
-                } else NSLog(@"missed frame:%02x count:%u and allkeys:%@", global_frame_id, global_total, jpgDict.allKeys);
-            }
-            
+        
+        if (is_first_frame==YES) {
             jpgData.length=0;
             [jpgDict removeAllObjects];
-            global_frame_id=0;
             global_total=0;
         }
+        if (global_frame_id!=frame_id) {
+            if (global_frame_id<frame_id||(global_frame_id==0xff&&frame_id==0x00)) {
+                if (global_total==jpgDict.count) {
+                    NSLog(@"show");
+                    global_total=0;
+                    jpgData.length=0;
+                    for (int k=0; k<jpgDict.count; k++) {
+                        [jpgData appendData:[jpgDict objectForKey:[NSString stringWithFormat:@"%d",k]]];
+                    }
+                    self.image = [UIImage imageWithData:jpgData];
+                    if (scrollView.superview!=nil) {
+                        [self aa];
+                    }
+                }
+                jpgData.length=0;
+                [jpgDict removeAllObjects];
+            } else if (global_frame_id==frame_id) {
+            } else {
+                free(new_data);
+                return;
+            }
+        }
+
+        
+        
+//        if (global_frame_id!=frame_id) {
+//            //try to refresh frame data.
+//            if (jpgDict.count==global_total) {
+//                NSLog(@"show");
+//                global_total=0;
+//                jpgData.length=0;
+//                for (int k=0; k<jpgDict.count; k++) {
+//                    [jpgData appendData:[jpgDict objectForKey:[NSString stringWithFormat:@"%d",k]]];
+//                }
+//                self.image = [UIImage imageWithData:jpgData];
+//                if (scrollView.superview!=nil) {
+//                    [self aa];
+//                }
+//            } else {
+//                if (is_first_recei_audio) {
+//                    is_first_recei_audio=NO;
+//                } else NSLog(@"missed frame:%02x count:%u and allkeys:%@", global_frame_id, global_total, jpgDict.allKeys);
+//            }
+//            
+//            jpgData.length=0;
+//            [jpgDict removeAllObjects];
+//            global_frame_id=0;
+//            global_total=0;
+//        }
         global_frame_id=frame_id;
         if (global_total<total) {
             global_total=total;
@@ -629,6 +653,10 @@ int timestamp;
 }
 
 */
+- (void)startShow {
+    is_first_frame=YES;
+}
+
 #pragma mark socket
 - (id)init{
     if (self = [super init]){

@@ -25,8 +25,8 @@ static BOOL bCallReady=false;
 
 F2FCBFUNCTIONS *cbfuncs__=NULL;
 
-//#define kMaxBytes 539
-#define kMaxBytes 1200
+#define kMaxBytes 539
+//#define kMaxBytes 1200
 
 typedef struct {
     unsigned char flag;
@@ -48,6 +48,10 @@ typedef struct {
     NSString *_callerid;
     
     dispatch_queue_t serial_queue;
+    
+    NSMutableData *slices;
+    unsigned char frame_id;
+    BOOL is_first_frame;
 }
 
 int OnReady()
@@ -78,22 +82,60 @@ void OnCalleeVideo(unsigned char *data, int len)
     if (cs!=tmp) {
         unsigned short len2;
         memcpy(&len2, &data[1], 2);
-        NSLog(@"error in cs t_len:%u type:%u len:%u cs:%02x tmp:%02x", len, data[7], len2, cs, tmp);
-//        NSLog(@"edata:%@", [NSData dataWithBytes:data length:len]);
+//        NSLog(@"error in cs t_len:%u type:%u len:%u cs:%02x tmp:%02x", len, data[7], len2, cs, tmp);
         return;
     } else {
-//        NSLog(@"odata:%@", [NSData dataWithBytes:data length:len]);
     }
     
     if (data[7]==0x0e) {
         if (bReadyToSendVideo==false) {
             return;
         }
+        
+        
+        /*check and send slice that has collected.*/
+//        if ([NetUtils sharedInstance]->is_first_frame==YES) {
+//            [NetUtils sharedInstance]->slices.length=0;
+//            [NetUtils sharedInstance]->frame_id=data[9];
+//            [NetUtils sharedInstance]->is_first_frame=NO;
+//        }
+//        if ([NetUtils sharedInstance]->frame_id!=data[9]) {
+//            if ([NetUtils sharedInstance]->frame_id<data[9]) {
+//                [NetUtils sharedInstance]->frame_id=data[9];
+//                [NetUtils sharedInstance]->slices.length=0;
+//            } else if ([NetUtils sharedInstance]->frame_id==0xff&&data[9]==0x00) {
+//                [NetUtils sharedInstance]->frame_id=data[9];
+//                [NetUtils sharedInstance]->slices.length=0;
+//            } else if ([NetUtils sharedInstance]->frame_id==data[9]) {
+//            } else return;
+//        }
+//        uint8_t tmp;
+//        BOOL can_append=YES;
+//        for (int k=0; k<[NetUtils sharedInstance]->slices.length; k++) {
+//            tmp=((uint8_t *)[NetUtils sharedInstance]->slices.bytes)[k];
+//            if (tmp==data[11]) {
+//                can_append=NO;
+//            }
+//        }
+//        if (can_append==YES) {
+//            [[NetUtils sharedInstance]->slices appendBytes:&data[11] length:1];
+//        }
+//        NSMutableData *resp = [NSMutableData data];
+//        [resp appendBytes:&data[9] length:1];
+//        [resp appendData:[NetUtils sharedInstance]->slices];
+//        [[NetUtils sharedInstance] startSendData:resp withType:CommandTypeVideoResp];
+        
+        
+        /*send back video response immediately.*/
+//        NSMutableData *resp = [NSMutableData data];
+//        [resp appendBytes:&data[9] length:1];
+//        [resp appendBytes:&data[11] length:1];
+//        [[NetUtils sharedInstance] startSendData:resp withType:CommandTypeVideoResp];
+
+
+        
         [[NetUtils sharedInstance].videoDelegate onReceivedData:data length:len];
-        NSMutableData *resp = [NSMutableData data];
-        [resp appendBytes:&data[9] length:1];
-        [resp appendBytes:&data[11] length:1];
-        dispatch_async([NetUtils sharedInstance]->serial_queue, ^(){[[NetUtils sharedInstance] startSendData:resp withType:CommandTypeVideoResp];});
+//        dispatch_async([NetUtils sharedInstance]->serial_queue, ^(){[[NetUtils sharedInstance] startSendData:resp withType:CommandTypeVideoResp];});
     } else if (data[7]==0x0f) {
         if (bReadyToSendVideo==false) {
             return;
@@ -195,6 +237,8 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
     static dispatch_once_t predicate; dispatch_once(&predicate, ^{
         sharedNetUtilsInstance = [[self alloc] init];
         sharedNetUtilsInstance->serial_queue = dispatch_queue_create("com.bo.serial_net", NULL);
+        sharedNetUtilsInstance->slices=[[NSMutableData data] retain];
+        sharedNetUtilsInstance->frame_id=0xff;
 //        signal(SIGPIPE,SIG_IGN);
 //        struct sigaction sa;
 //        sa.sa_handler = new_sa_handler;
@@ -286,6 +330,7 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
 }
 
 - (int)startCall:(NSString *)cid {
+    is_first_frame=YES;
     return startCall((char *)[cid cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
@@ -335,45 +380,47 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
 }
 
 - (void)startSendData:(NSData *)data withType:(CommandType)type {
-    if (cbfuncs__==NULL) {
-        return;
-    }
-    static unsigned int _serial = 0;
-    unsigned long long bytesSent = 0;
-    while (data.length-bytesSent > 0) {
-        unsigned int bytesThisTime = 0;
-        if (data.length-bytesSent < kMaxBytes) {
-            bytesThisTime = data.length-bytesSent;
-        } else {
-            bytesThisTime = kMaxBytes;
+//    dispatch_async(serial_queue, ^(){
+        if (cbfuncs__==NULL) {
+            return;
         }
-        NSRange range;
-        range.location = bytesSent;
-        range.length = bytesThisTime;
-        NSData *newData = [data subdataWithRange:range];
-        NSMutableData *_mdata = [NSMutableData data];
-        unsigned char flag = 0x7E;
-        unsigned short len = bytesThisTime+6;
-        unsigned int serial = _serial++;
-        unsigned char cmd = [self convertCommandTypeToBytes:type];
-        unsigned char cs = 0x00;
-        [_mdata appendBytes:&flag length:1];
-        [_mdata appendBytes:&len length:2];
-        [_mdata appendBytes:&serial length:4];
-        [_mdata appendBytes:&cmd length:1];
-        [_mdata appendBytes:newData.bytes length:bytesThisTime];
-        [_mdata appendBytes:&cs length:1];
-        
-        char *d=(char *)_mdata.bytes;
-        for(int i=0,f=_mdata.length-1;i<f;i++){
-            d[f]+=d[i];
+        static unsigned int _serial = 0;
+        unsigned long long bytesSent = 0;
+        while (data.length-bytesSent > 0) {
+            unsigned int bytesThisTime = 0;
+            if (data.length-bytesSent < kMaxBytes) {
+                bytesThisTime = data.length-bytesSent;
+            } else {
+                bytesThisTime = kMaxBytes;
+            }
+            NSRange range;
+            range.location = bytesSent;
+            range.length = bytesThisTime;
+            NSData *newData = [data subdataWithRange:range];
+            NSMutableData *_mdata = [NSMutableData data];
+            unsigned char flag = 0x7E;
+            unsigned short len = bytesThisTime+6;
+            unsigned int serial = _serial++;
+            unsigned char cmd = [self convertCommandTypeToBytes:type];
+            unsigned char cs = 0x00;
+            [_mdata appendBytes:&flag length:1];
+            [_mdata appendBytes:&len length:2];
+            [_mdata appendBytes:&serial length:4];
+            [_mdata appendBytes:&cmd length:1];
+            [_mdata appendBytes:newData.bytes length:bytesThisTime];
+            [_mdata appendBytes:&cs length:1];
+            
+            char *d=(char *)_mdata.bytes;
+            for(int i=0,f=_mdata.length-1;i<f;i++){
+                d[f]+=d[i];
+            }
+            if (type==CommandTypeAudioResp||type==CommandTypeVideoResp) {
+                NSLog(@"resp:%d con:%@\n",type,_mdata);
+            }
+            sendData((unsigned char *)_mdata.bytes, _mdata.length);
+            bytesSent+=bytesThisTime;
         }
-        if (type==CommandTypeAudioResp||type==CommandTypeVideoResp) {
-            NSLog(@"resp:%d con:%@\n",type,_mdata);
-        }
-        sendData((unsigned char *)_mdata.bytes, _mdata.length);
-        bytesSent+=bytesThisTime;
-    }
+//    });
 }
 
 
