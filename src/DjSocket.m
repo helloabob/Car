@@ -233,6 +233,7 @@ int timestamp;
             jpgData.length=0;
             [jpgDict removeAllObjects];
             global_total=0;
+            is_first_frame=NO;
         }
         if (global_frame_id!=frame_id) {
             if (global_frame_id<frame_id||(global_frame_id==0xff&&frame_id==0x00)) {
