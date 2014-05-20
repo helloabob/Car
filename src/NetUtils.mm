@@ -163,12 +163,12 @@ void OnStatusNotify(int st, char* msg)
     
     //SM_HEARTBEATING			= 5,		// Heart-beating
     
-    NSLog(@"--------------status------------\n%s\n", msg);
+//    NSLog(@"--------------status------------\n%s\n", msg);
     
     if (strstr(msg, "(4) SM_NATDETECTREQ --->(5) SM_HEARTBEATING")){
         //            bCallReady = true;
         bCallReady=true;
-        printf("callReay\n");
+//        printf("callReay\n");
         kPostNotif(@"stateChange",@"callReady");
     }
 }

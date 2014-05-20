@@ -221,7 +221,7 @@ int timestamp;
 //            canAppend=YES;
 //        }
         
-        NSLog(@"frame_id:%02x cur:%u and total:%u", tvData[1], tvData[3], tvData[2]);
+//        NSLog(@"frame_id:%02x cur:%u and total:%u", tvData[1], tvData[3], tvData[2]);
         
         
         unsigned char total=tvData[2];
@@ -233,10 +233,11 @@ int timestamp;
             jpgData.length=0;
             [jpgDict removeAllObjects];
             is_first_frame=NO;
+            NSLog(@"first_frame");
         } else if (global_frame_id!=frame_id) {
             if (global_frame_id<frame_id||(global_frame_id==0xff&&frame_id==0x00)) {
                 if (global_total==jpgDict.count) {
-                    NSLog(@"show");
+                    NSLog(@"show global_frame_id:%02x coming_frame_id:%02x",global_frame_id,frame_id);
                     global_total=0;
                     jpgData.length=0;
                     for (int k=0; k<jpgDict.count; k++) {
@@ -246,10 +247,13 @@ int timestamp;
                     if (scrollView.superview!=nil) {
                         [self aa];
                     }
+                } else {
+                    NSLog(@"miss global_frame_id:%02x coming_frame_id:%02x",global_frame_id,frame_id);
                 }
                 jpgData.length=0;
                 [jpgDict removeAllObjects];
             } else {
+                NSLog(@"ignore global_frame_id:%02x and coming_frame_id:%02x",global_frame_id, frame_id);
                 free(new_data);
                 return;
             }
@@ -287,8 +291,7 @@ int timestamp;
         }
         
         
-        unsigned char cur=0;
-        memcpy(&cur, &tvData[3], 1);
+        unsigned char cur=tvData[3];
         NSString *key = [NSString stringWithFormat:@"%u", cur];
         if (![jpgDict objectForKey:key]) {
             [jpgDict setObject:[NSData dataWithBytes:&tvData[4] length:requestLength-10] forKey:key];
