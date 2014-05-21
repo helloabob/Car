@@ -164,7 +164,7 @@ void OnStatusNotify(int st, char* msg)
     
     //SM_HEARTBEATING			= 5,		// Heart-beating
     
-//    NSLog(@"%s\n", msg);
+    NSLog(@"%s\n", msg);
     
     if (strstr(msg, "(4) SM_NATDETECTREQ --->(5) SM_HEARTBEATING")){
         //            bCallReady = true;
