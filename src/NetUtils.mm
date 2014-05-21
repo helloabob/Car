@@ -51,7 +51,6 @@ typedef struct {
     
     NSMutableData *slices;
     unsigned char frame_id;
-    BOOL is_first_frame;
 }
 
 int OnReady()
@@ -80,8 +79,8 @@ void OnCalleeVideo(unsigned char *data, int len)
         tmp+=data[i];
     }
     if (cs!=tmp) {
-        unsigned short len2;
-        memcpy(&len2, &data[1], 2);
+//        unsigned short len2;
+//        memcpy(&len2, &data[1], 2);
 //        NSLog(@"error in cs t_len:%u type:%u len:%u cs:%02x tmp:%02x", len, data[7], len2, cs, tmp);
         return;
     } else {
@@ -133,6 +132,8 @@ void OnCalleeVideo(unsigned char *data, int len)
 //        [[NetUtils sharedInstance] startSendData:resp withType:CommandTypeVideoResp];
 
 
+//        NSLog(@"rece frame:%02x slice:%02x total:%02x",data[9],data[11],data[10]);
+        
         
         [[NetUtils sharedInstance].videoDelegate onReceivedData:data length:len];
 //        dispatch_async([NetUtils sharedInstance]->serial_queue, ^(){[[NetUtils sharedInstance] startSendData:resp withType:CommandTypeVideoResp];});
@@ -163,7 +164,7 @@ void OnStatusNotify(int st, char* msg)
     
     //SM_HEARTBEATING			= 5,		// Heart-beating
     
-//    NSLog(@"--------------status------------\n%s\n", msg);
+//    NSLog(@"%s\n", msg);
     
     if (strstr(msg, "(4) SM_NATDETECTREQ --->(5) SM_HEARTBEATING")){
         //            bCallReady = true;
@@ -330,7 +331,6 @@ void OnGetRegInfoByMobileAck(int errCode, char* mobileno, char* buddy)
 }
 
 - (int)startCall:(NSString *)cid {
-    is_first_frame=YES;
     return startCall((char *)[cid cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 

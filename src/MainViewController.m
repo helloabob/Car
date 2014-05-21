@@ -193,6 +193,7 @@ typedef enum ActionState{
     hud.labelText = @"寻址中...";
     actionState_=ActionStateCalling;
     int result = [[NetUtils sharedInstance] startCall:txtCalleeId.text];
+    [[DjSocket sharedInstance] startShow];
     NSLog(@"call_result:%d", result);
 }
 

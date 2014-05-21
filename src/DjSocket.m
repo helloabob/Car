@@ -248,7 +248,7 @@ int timestamp;
                         [self aa];
                     }
                 } else {
-                    NSLog(@"miss global_frame_id:%02x coming_frame_id:%02x",global_frame_id,frame_id);
+                    NSLog(@"miss global_frame_id:%02x total:%u coming_frame_id:%02x global_total:%u",global_frame_id,jpgDict.count,frame_id,global_total);
                 }
                 jpgData.length=0;
                 [jpgDict removeAllObjects];
