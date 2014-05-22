@@ -7,7 +7,9 @@
 
 //#define kFilteringFactor   0.03
 
-@implementation DemoViewController;
+@implementation DemoViewController{
+    UITextView *txtLog;
+}
 
 @synthesize djSocket;
 @synthesize mA;
@@ -208,7 +210,23 @@ int deta=32;
     buttonRunLoop = YES;
     [self performSelectorInBackground:@selector(buttonRunLoopHandler) withObject:nil];
     
+#ifdef logShow
+    txtLog = [[[UITextView alloc] initWithFrame:CGRectMake(0, 0, 320, 250)] autorelease];
+    txtLog.backgroundColor = [UIColor whiteColor];
+    txtLog.alpha=0.7f;
+    txtLog.textColor=[UIColor blackColor];
+    txtLog.text=@"";
+    [self.view addSubview:txtLog];
     
+    kAddObserver(@selector(receiLog:), @"log3");
+#endif
+    
+}
+
+- (void)receiLog:(NSNotification *)notif {
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        txtLog.text=[NSString stringWithFormat:@"%@%@",txtLog.text,notif.object];
+    });
 }
 
 - (void)buttonRunLoopHandler {

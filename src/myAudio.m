@@ -39,8 +39,8 @@ BOOL isPlay=YES;
 }
 
 -(void)startPlay{
-//	isPlay=YES;
-//    [self startRecording:FILEPATH];
+	isPlay=YES;
+    [self startRecording:FILEPATH];
 }
 -(void)stopPlay{
 	[self stopSound];

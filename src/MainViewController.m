@@ -28,6 +28,7 @@ typedef enum ActionState{
     NSTimer * timer_;
     BOOL shouldInitNetwork;
     ActionState actionState_;
+    UITextView *txtLog;
 }
 
 @property(nonatomic,retain) AVAudioRecorder * recorder;
@@ -98,12 +99,27 @@ typedef enum ActionState{
     [btn setBackgroundImage:[UIImage imageNamed:@"record_down"] forState:UIControlStateHighlighted];
     [viewSpeak addSubview:btn];
     
+#ifdef logShow
+    txtLog = [[[UITextView alloc] initWithFrame:CGRectMake(0, 0, 320, 250)] autorelease];
+    txtLog.backgroundColor = [UIColor whiteColor];
+    txtLog.alpha=0.7f;
+    txtLog.textColor=[UIColor blackColor];
+    txtLog.text=@"";
+    [self.view addSubview:txtLog];
     
+    kAddObserver(@selector(receiLog:), @"log2");
+#endif
     kAddObserver(@selector(didEnterBackground), UIApplicationDidEnterBackgroundNotification);
     kAddObserver(@selector(didBecomeActive), UIApplicationDidBecomeActiveNotification);
     kAddObserver(@selector(stateChange:), @"stateChange");
     shouldInitNetwork=YES;
     [self initNetwork];
+}
+
+- (void)receiLog:(NSNotification *)notif {
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        txtLog.text=[NSString stringWithFormat:@"%@%@",txtLog.text,notif.object];
+    });
 }
 
 - (void)initNetwork {
@@ -194,7 +210,7 @@ typedef enum ActionState{
     actionState_=ActionStateCalling;
     int result = [[NetUtils sharedInstance] startCall:txtCalleeId.text];
     [[DjSocket sharedInstance] startShow];
-    NSLog(@"call_result:%d", result);
+//    NSLog(@"call_result:%d", result);
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {

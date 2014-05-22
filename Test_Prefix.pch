@@ -10,3 +10,14 @@
 #if 0
 #define NSLog(...) {}
 #endif
+
+//#define logShow
+
+#ifdef logShow
+#define printLogOnView(a) kPostNotif(@"log2",a);
+#define printLogOnDemo(a) kPostNotif(@"log3",a);
+#else
+#define printLogOnView(a) {}
+#define printLogOnDemo(a) {}
+#endif
+

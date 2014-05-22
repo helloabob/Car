@@ -196,6 +196,7 @@ int timestamp;
 //            return;
 //        }
         
+        
 //        position = 0;
         //	while (YES) {
         //∂¡header
@@ -238,6 +239,8 @@ int timestamp;
             if (global_frame_id<frame_id||(global_frame_id==0xff&&frame_id==0x00)) {
                 if (global_total==jpgDict.count) {
                     NSLog(@"show global_frame_id:%02x coming_frame_id:%02x",global_frame_id,frame_id);
+                    NSString *log = [NSString stringWithFormat:@"--------------------------\nshow global_frame_id:%02x coming_frame_id:%02x\n",global_frame_id,frame_id];
+                    printLogOnDemo(log);
                     global_total=0;
                     jpgData.length=0;
                     for (int k=0; k<jpgDict.count; k++) {
@@ -248,12 +251,16 @@ int timestamp;
                         [self aa];
                     }
                 } else {
-                    NSLog(@"miss global_frame_id:%02x total:%u coming_frame_id:%02x global_total:%u",global_frame_id,jpgDict.count,frame_id,global_total);
+                    NSLog(@"miss global_frame_id:%02x coming_frame_id:%02x cur_total:%u need_total:%u",global_frame_id,frame_id,jpgDict.count,global_total);
+                    NSString *log = [NSString stringWithFormat:@"--------------------------\nmiss global_frame_id:%02x coming_frame_id:%02x cur_total:%u need_total:%u\n",global_frame_id,frame_id,jpgDict.count,global_total];
+                    printLogOnDemo(log);
                 }
                 jpgData.length=0;
                 [jpgDict removeAllObjects];
             } else {
                 NSLog(@"ignore global_frame_id:%02x and coming_frame_id:%02x",global_frame_id, frame_id);
+                NSString *log = [NSString stringWithFormat:@"--------------------------\nignore global_frame_id:%02x and coming_frame_id:%02x\n",global_frame_id, frame_id];
+                printLogOnDemo(log);
                 free(new_data);
                 return;
             }

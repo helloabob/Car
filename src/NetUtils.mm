@@ -141,7 +141,7 @@ void OnCalleeVideo(unsigned char *data, int len)
         if (bReadyToSendVideo==false) {
             return;
         }
-//        [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
+        [[NetUtils sharedInstance].audioDelegate onReceivedData:data length:len];
 //        NSData *resp=[NSData dataWithBytes:&data[3] length:4];
 //        dispatch_async([NetUtils sharedInstance]->serial_queue, ^(){[[NetUtils sharedInstance] startSendData:resp withType:CommandTypeAudioResp];});
     }
@@ -165,6 +165,8 @@ void OnStatusNotify(int st, char* msg)
     //SM_HEARTBEATING			= 5,		// Heart-beating
     
     NSLog(@"%s\n", msg);
+    
+    printLogOnView([NSString stringWithCString:msg encoding:NSUTF8StringEncoding]);
     
     if (strstr(msg, "(4) SM_NATDETECTREQ --->(5) SM_HEARTBEATING")){
         //            bCallReady = true;

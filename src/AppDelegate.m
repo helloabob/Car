@@ -9,7 +9,9 @@
 
 #import "NetUtils.h"
 
-@implementation AppDelegate
+@implementation AppDelegate {
+    UITextView *tv;
+}
 @synthesize window;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions { 
@@ -63,9 +65,11 @@
     self.window.rootViewController = nav;
 	
     [self.window makeKeyAndVisible];
-    
-    
     return YES;
+}
+
+- (void)receiLog:(NSNotification *)notfi {
+    tv.text = [NSString stringWithFormat:@"%@%@",tv.text,notfi.object];
 }
 
 -(BOOL)connectedToNetwork
