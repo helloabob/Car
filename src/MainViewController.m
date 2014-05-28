@@ -90,6 +90,13 @@ typedef enum ActionState{
     btn.backgroundColor = [UIColor colorWithRed:0 green:0.6 blue:0 alpha:1];
     [viewDial addSubview:btn];
     
+    btn = [[[UIButton alloc] initWithFrame:CGRectMake(20, 380, 280, 40)] autorelease];
+    [btn setTitle:@"二维码扫描" forState:UIControlStateNormal];
+    btn.layer.cornerRadius = 10;
+    [btn addTarget:self action:@selector(scan) forControlEvents:UIControlEventTouchUpInside];
+    btn.backgroundColor = [UIColor colorWithRed:0 green:0.6 blue:0 alpha:1];
+    [viewDial addSubview:btn];
+    
     btn = [[[UIButton alloc] initWithFrame:CGRectMake(110, 180, 100, 100)] autorelease];
     [btn addTarget:self action:@selector(startRecord) forControlEvents:UIControlEventTouchDown];
     [btn addTarget:self action:@selector(recordEnd) forControlEvents:UIControlEventTouchUpInside];
@@ -112,8 +119,67 @@ typedef enum ActionState{
     kAddObserver(@selector(didEnterBackground), UIApplicationDidEnterBackgroundNotification);
     kAddObserver(@selector(didBecomeActive), UIApplicationDidBecomeActiveNotification);
     kAddObserver(@selector(stateChange:), @"stateChange");
-    shouldInitNetwork=YES;
-    [self initNetwork];
+//    shouldInitNetwork=YES;
+//    [self initNetwork];
+}
+
+- (void)scan {
+    ZBarReaderController *reader=[[ZBarReaderController alloc]init];
+    reader.delegate=self;
+//    reader.showsHelpOnFail=NO;
+//    reader.showsZBarControls=NO;
+    reader.cameraMode=ZBarReaderControllerCameraModeSampling;
+//    reader.takesPicture=YES;
+    
+//    reader.scanCrop=CGRectMake(0.1, 0.2, 0.8, 0.8);
+    ZBarImageScanner *scanner=reader.scanner;
+    [scanner setSymbology:ZBAR_I25 config:ZBAR_CFG_ENABLE to:0];
+    
+    UIView *v1=[[[UIView alloc]initWithFrame:CGRectMake(0, 20, 280, 40)]autorelease];
+    v1.backgroundColor=[UIColor clearColor];
+    reader.cameraOverlayView=v1;
+    
+    UILabel * label = [[UILabel alloc] initWithFrame:CGRectMake(20, 20, 280, 40)];
+    label.text = @"请将扫描的二维码至于下面的框内\n谢谢！";
+    label.textColor = [UIColor whiteColor];
+    label.textAlignment = 1;
+    label.lineBreakMode = 0;
+    label.numberOfLines = 2;
+    label.backgroundColor = [UIColor clearColor];
+    [v1 addSubview:label];
+    
+    UIImageView * image = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pick_bg"]];
+    image.frame = CGRectMake(20, 80, 280, 280);
+    [v1 addSubview:image];
+    
+    
+    
+//    for (id vv in reader.view.subviews) {
+//        if ([vv isKindOfClass:[UIView class]]) {
+//            for (id dd in ((UIView *)vv).subviews) {
+//                if ([dd isKindOfClass:[UIToolbar class]]) {
+//                    for (id aa in ((UIView *)dd).subviews) {
+//                        if ([aa isKindOfClass:[UIButton class]]) {
+//                            [aa removeFromSuperview];
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+    [self presentViewController:reader animated:YES completion:nil];
+    [reader release];
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    id<NSFastEnumeration>results=[info objectForKey:ZBarReaderControllerResults];
+    ZBarSymbol *sym=nil;
+    for (sym in results) {
+        break;
+    }
+    [picker dismissViewControllerAnimated:YES completion:^(){
+        NSLog(@"scan:%@",sym.data);
+    }];
 }
 
 - (void)receiLog:(NSNotification *)notif {
