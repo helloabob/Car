@@ -2,6 +2,7 @@
 #import "DemoViewController.h" 
 //#import "DataVerifier.h"
 #import "MainViewController.h"
+#import "IndexViewController.h"
 
 #import <sys/utsname.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
@@ -15,7 +16,6 @@
 @synthesize window;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions { 
-    
 //	[NSThread sleepForTimeInterval:2.0];
 //	if ([self connectedToNetwork]) {
 //		self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];      
@@ -59,7 +59,7 @@
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     self.window.backgroundColor = [UIColor whiteColor];
     
-    MainViewController *demo = [[[MainViewController alloc] init] autorelease];
+    IndexViewController *demo = [[[IndexViewController alloc] init] autorelease];
     UINavigationController *nav = [[[UINavigationController alloc] initWithRootViewController:demo] autorelease];
     nav.navigationBarHidden = YES;
     self.window.rootViewController = nav;

@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ZBarSDK.h"
+#import <ZXingWidgetController.h>
 
-@interface MainViewController : UIViewController<UITextFieldDelegate,ZBarReaderDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+@interface MainViewController : UIViewController<UITextFieldDelegate,ZXingDelegate>
 
 @end
