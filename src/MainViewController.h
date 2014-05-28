@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "ZBarSDK.h"
 
-@interface MainViewController : UIViewController<UITextFieldDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+@interface MainViewController : UIViewController<UITextFieldDelegate,ZBarReaderDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
 @end

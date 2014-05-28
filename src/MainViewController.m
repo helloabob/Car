@@ -123,12 +123,18 @@ typedef enum ActionState{
 //    [self initNetwork];
 }
 
+- (void) readerControllerDidFailToRead: (ZBarReaderController*) reader
+                             withRetry: (BOOL) retry {
+    NSLog(@"failed...");
+}
+
 - (void)scan {
     ZBarReaderController *reader=[[ZBarReaderController alloc]init];
-    reader.delegate=self;
+//    reader.delegate=self;
+    reader.readerDelegate=self;
 //    reader.showsHelpOnFail=NO;
-//    reader.showsZBarControls=NO;
-    reader.cameraMode=ZBarReaderControllerCameraModeSampling;
+    reader.showsZBarControls=NO;
+//    reader.cameraMode=ZBarReaderControllerCameraModeSampling;
 //    reader.takesPicture=YES;
     
 //    reader.scanCrop=CGRectMake(0.1, 0.2, 0.8, 0.8);
