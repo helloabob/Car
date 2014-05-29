@@ -11,14 +11,17 @@
 #import "DetailViewController.h"
 
 NSString *host=@"192.168.16.12";
+//NSString *host=@"192.168.0.103";
 unsigned short port=8000;
 
 @interface WIFITableViewController (){
     AsyncUdpSocket *socket;
     DetailViewController *vc;
     BOOL canresp;
-    NSMutableArray *ssidArray;
+    
 }
+
+@property(nonatomic,retain)NSMutableArray *ssidArray;
 
 @end
 
@@ -26,6 +29,7 @@ unsigned short port=8000;
 
 -(void)dealloc{
     NSLog(@"wifi_dealloc");
+    self.ssidArray=nil;
     kRemoveNotif(UIApplicationDidEnterBackgroundNotification);
     kRemoveNotif(UIApplicationDidBecomeActiveNotification);
     socket.delegate=nil;
@@ -94,7 +98,7 @@ unsigned short port=8000;
 {
     [super viewDidLoad];
     
-    ssidArray=[[NSMutableArray alloc]init];
+    self.ssidArray=[NSMutableArray array];
     
     socket=[[AsyncUdpSocket alloc]initWithDelegate:self];
     [socket bindToPort:10242 error:nil];
@@ -124,30 +128,32 @@ unsigned short port=8000;
     }
     if (dt[7]==0x0b) {
         unsigned short len;
-        memcpy(&len, dt[1], 2);
-        NSString *ssids=[[NSString alloc]initWithBytes:dt[8] length:len encoding:NSUTF8StringEncoding];
+        memcpy(&len, &dt[1], 2);
+        NSString *ssids=[[NSString alloc]initWithBytes:&dt[8] length:len-6 encoding:NSUTF8StringEncoding];
         NSLog(@"ssids:%@",ssids);
         
-        NSString *body=ssids;
-        UIAlertView *alert=[[UIAlertView alloc]initWithTitle:@"提示" message:body delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
-        [alert show];
-        [alert release];
+//        NSString *body=ssids;
+//        UIAlertView *alert=[[UIAlertView alloc]initWithTitle:@"提示" message:body delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+//        [alert show];
+//        [alert release];
         
-        ssidArray = [NSMutableArray arrayWithArray:[ssids componentsSeparatedByString:@" "]];
+        self.ssidArray = [NSMutableArray arrayWithArray:[ssids componentsSeparatedByString:@" "]];
+        
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        
+        [self.tableView reloadData];
         
         
-        return YES;
     }else if(dt[7]==0x0c){
         unsigned char result=dt[8];
         BOOL flag=result>0?YES:NO;
         if (canresp&&vc!=nil) {
             [vc onresp:flag];
         }
-        return YES;
+//        return YES;
     }
     
-    return NO;
-    
+    return YES;
 //    NSString *s = [[[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding] autorelease];
 //    NSLog(@"didReceiveData, host = %@, tag = %ld, s = %@", host, tag, s);
     
@@ -189,7 +195,7 @@ unsigned short port=8000;
 {
 //#warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return ssidArray.count;
+    return _ssidArray.count;
 }
 
 
@@ -204,7 +210,7 @@ unsigned short port=8000;
     
 //    static int aa=0;
     
-    cell.textLabel.text=[ssidArray objectAtIndex:indexPath.row];
+    cell.textLabel.text=[_ssidArray objectAtIndex:indexPath.row];
     // Configure the cell...
     
     return cell;
