@@ -43,7 +43,13 @@ typedef enum ActionState{
 @end
 
 @implementation MainViewController
-
+-(void)dealloc{
+    NSLog(@"main_dealloc");
+    kRemoveNotif(UIApplicationDidEnterBackgroundNotification);
+    kRemoveNotif(UIApplicationDidBecomeActiveNotification);
+    kRemoveNotif(@"stateChange");
+    [super dealloc];
+}
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -59,16 +65,16 @@ typedef enum ActionState{
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor lightGrayColor];
     
-    viewDial = [[UIView alloc] initWithFrame:self.view.bounds];
+    viewDial = [[[UIView alloc] initWithFrame:self.view.bounds]autorelease];
     viewDial.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:viewDial];
-    viewSpeak = [[UIView alloc] initWithFrame:self.view.bounds];
+    viewSpeak = [[[UIView alloc] initWithFrame:self.view.bounds]autorelease];
     viewSpeak.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:viewSpeak];
     [self.view bringSubviewToFront:viewDial];
     
     
-    UILabel *lbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 40)];
+    UILabel *lbl = [[[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 40)]autorelease];
     lbl.text = @"终端号:";
     lbl.textAlignment = NSTextAlignmentCenter;
     lbl.font = [UIFont systemFontOfSize:14];
@@ -129,8 +135,8 @@ typedef enum ActionState{
     kAddObserver(@selector(didEnterBackground), UIApplicationDidEnterBackgroundNotification);
     kAddObserver(@selector(didBecomeActive), UIApplicationDidBecomeActiveNotification);
     kAddObserver(@selector(stateChange:), @"stateChange");
-//    shouldInitNetwork=YES;
-//    [self initNetwork];
+    shouldInitNetwork=YES;
+    [self initNetwork];
 }
 
 -(void)goback{
@@ -140,6 +146,8 @@ typedef enum ActionState{
 - (void)zxingController:(ZXingWidgetController*)controller didScanResult:(NSString *)result{
     NSLog(@"got:%@",result);
     [controller dismissViewControllerAnimated:NO completion:nil];
+    txtCalleeId.text=result;
+    [self call];
 }
 - (void)zxingControllerDidCancel:(ZXingWidgetController*)controller{
     [controller dismissViewControllerAnimated:NO completion:nil];

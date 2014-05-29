@@ -8,12 +8,16 @@
 
 #import "WIFITableViewController.h"
 #import "MBProgressHUD.h"
+#import "DetailViewController.h"
 
 NSString *host=@"192.168.16.12";
-unsigned short port=10242;
+unsigned short port=8000;
 
 @interface WIFITableViewController (){
     AsyncUdpSocket *socket;
+    DetailViewController *vc;
+    BOOL canresp;
+    NSMutableArray *ssidArray;
 }
 
 @end
@@ -22,6 +26,8 @@ unsigned short port=10242;
 
 -(void)dealloc{
     NSLog(@"wifi_dealloc");
+    kRemoveNotif(UIApplicationDidEnterBackgroundNotification);
+    kRemoveNotif(UIApplicationDidBecomeActiveNotification);
     socket.delegate=nil;
     [socket close];
     [socket release];
@@ -36,6 +42,7 @@ unsigned short port=10242;
     }
     return self;
 }
+
 
 -(void)senddata:(NSData *)data withType:(unsigned char)cmd{
     static unsigned int _serial;
@@ -55,7 +62,15 @@ unsigned short port=10242;
     for(int i=0,f=_mdata.length-1;i<f;i++){
         d[f]+=d[i];
     }
-    [socket sendData:_mdata toHost:host port:port withTimeout:5 tag:2];
+    NSLog(@"send_data:%@",_mdata);
+    BOOL fg=[socket sendData:_mdata toHost:host port:port withTimeout:5 tag:2];
+    NSLog(@"udp_send:%d",fg);
+}
+
+
+-(void)setWIFI:(NSData *)data{
+    [self senddata:data withType:0x0c];
+    [socket receiveWithTimeout:5 tag:2];
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -63,16 +78,33 @@ unsigned short port=10242;
     [self senddata:nil withType:0x0b];
     [socket receiveWithTimeout:5 tag:1];
     MBProgressHUD *mb=[MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    mb.labelText=@"请求SSID列表中...";
+    mb.labelText=@"查询SSID列表中...";
+    canresp=NO;
+}
+
+-(void)didEnterBackground{
+//    [socket close];
+}
+-(void)didBecomeActive{
+    socket=[[AsyncUdpSocket alloc]initWithDelegate:self];
+    [socket bindToPort:10242 error:nil];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    ssidArray=[[NSMutableArray alloc]init];
+    
     socket=[[AsyncUdpSocket alloc]initWithDelegate:self];
     [socket bindToPort:10242 error:nil];
     
     self.navigationController.navigationBarHidden=NO;
+    
+    
+    kAddObserver(@selector(didEnterBackground), UIApplicationDidEnterBackgroundNotification);
+    kAddObserver(@selector(didBecomeActive), UIApplicationDidBecomeActiveNotification);
+    
     
     
 //    socket sendData:<#(NSData *)#> toHost:<#(NSString *)#> port:<#(UInt16)#> withTimeout:<#(NSTimeInterval)#> tag:<#(long)#>
@@ -95,10 +127,22 @@ unsigned short port=10242;
         memcpy(&len, dt[1], 2);
         NSString *ssids=[[NSString alloc]initWithBytes:dt[8] length:len encoding:NSUTF8StringEncoding];
         NSLog(@"ssids:%@",ssids);
+        
+        NSString *body=ssids;
+        UIAlertView *alert=[[UIAlertView alloc]initWithTitle:@"提示" message:body delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+        [alert show];
+        [alert release];
+        
+        ssidArray = [NSMutableArray arrayWithArray:[ssids componentsSeparatedByString:@" "]];
+        
+        
         return YES;
     }else if(dt[7]==0x0c){
         unsigned char result=dt[8];
-        NSLog(@"result:%d",result);
+        BOOL flag=result>0?YES:NO;
+        if (canresp&&vc!=nil) {
+            [vc onresp:flag];
+        }
         return YES;
     }
     
@@ -112,7 +156,14 @@ unsigned short port=10242;
 
 - (void)onUdpSocket:(AsyncUdpSocket *)sock didNotReceiveDataWithTag:(long)tag dueToError:(NSError *)error{
     NSLog(@"not receive");
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    if (tag==1) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        [self.navigationController popViewControllerAnimated:YES];
+    }else if(tag==2){
+        if (canresp&&vc!=nil) {
+            [vc onresp:NO];
+        }
+    }
 }
 
 - (void)onUdpSocketDidClose:(AsyncUdpSocket *)sock{
@@ -138,7 +189,7 @@ unsigned short port=10242;
 {
 //#warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return 5;
+    return ssidArray.count;
 }
 
 
@@ -151,7 +202,9 @@ unsigned short port=10242;
         cell=[[[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]autorelease];
     }
     
-    cell.textLabel.text=@"fsdfsdfdsfsad";
+//    static int aa=0;
+    
+    cell.textLabel.text=[ssidArray objectAtIndex:indexPath.row];
     // Configure the cell...
     
     return cell;
@@ -159,6 +212,13 @@ unsigned short port=10242;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    vc=[[[DetailViewController alloc]init]autorelease];
+    vc.parent=self;
+    vc.ssid=[tableView cellForRowAtIndexPath:indexPath].textLabel.text;
+    [self.navigationController pushViewController:vc animated:YES];
+    canresp=YES;
+    
 }
 
 

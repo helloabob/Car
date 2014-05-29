@@ -10,5 +10,5 @@
 #import "AsyncUdpSocket.h"
 
 @interface WIFITableViewController : UITableViewController
-
+-(void)setWIFI:(NSData *)data;
 @end

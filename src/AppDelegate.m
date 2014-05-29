@@ -15,7 +15,24 @@
 }
 @synthesize window;
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions { 
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    //7373 69643220 66686768 6a6a
+//    unsigned char aa[12];
+//    aa[0]=0x73;
+//    aa[1]=0x73;
+//    aa[2]=0x69;
+//    aa[3]=0x64;
+//    aa[4]=0x32;
+//    aa[5]=0x20;
+//    aa[6]=0x66;
+//    aa[7]=0x68;
+//    aa[8]=0x67;
+//    aa[9]=0x68;
+//    aa[10]=0x6a;
+//    aa[11]=0x6a;
+//    NSData *data=[NSData dataWithBytes:aa length:12];
+//    NSString *ss=[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+//    NSLog(@"%@",ss);
 //	[NSThread sleepForTimeInterval:2.0];
 //	if ([self connectedToNetwork]) {
 //		self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];      

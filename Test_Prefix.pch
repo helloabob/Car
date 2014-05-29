@@ -7,6 +7,10 @@
 
 #define kPostNotif(a,b) [[NSNotificationCenter defaultCenter] postNotificationName:a object:b userInfo:nil];
 
+#define kRemoveNotif(a) [[NSNotificationCenter defaultCenter] removeObserver:self name:a object:nil]
+
+#define IsIOS7System2  [[UIDevice currentDevice].systemVersion floatValue]>=7.0
+
 #if 0
 #define NSLog(...) {}
 #endif
